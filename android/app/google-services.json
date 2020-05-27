@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "298320895095",
+    "firebase_url": "https://fit-me-88a5e.firebaseio.com",
+    "project_id": "fit-me-88a5e",
+    "storage_bucket": "fit-me-88a5e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:298320895095:android:665ccb216ecf7bbbde7a72",
+        "android_client_info": {
+          "package_name": "com.example.fit_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "298320895095-7qpotu7u4shpokk72rqgbkjg96dc69rs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAEQj0GHld-tDOU44uBWrV1GAt7kp816AU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "298320895095-7qpotu7u4shpokk72rqgbkjg96dc69rs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

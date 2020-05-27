@@ -1,0 +1,44 @@
+name: fit_app
+description: A new Flutter project.
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^0.1.2
+  pedometer: ^1.0.0
+  percent_indicator: ^2.1.1
+  flutter_launcher_icons: ^0.7.5
+  font_awesome_flutter: ^8.8.1
+  bottom_navy_bar: ^5.2.2
+  line_icons: ^0.2.0
+  # firebase
+  firebase_auth: ^0.15.4
+  cloud_firestore: ^0.13.2+1
+  rxdart: ^0.24.0
+  equatable: ^1.1.1
+  bloc: ^4.0.0
+  flutter_bloc: ^4.0.0
+  native_color: ^1.0.1
+  numberpicker: ^1.2.0
+  smooth_page_indicator: ^0.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/step.png"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/img_marketing.png
+    - assets/images/frame-ilustrasi1.png
+    - assets/images/lingakaran-kiri1.png
+    - assets/images/lingkarkanan1.png
