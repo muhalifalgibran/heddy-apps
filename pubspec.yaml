@@ -25,6 +25,7 @@ dependencies:
   native_color: ^1.0.1
   numberpicker: ^1.2.0
   smooth_page_indicator: ^0.1.5
+  flutter_dash: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -41,4 +42,12 @@ flutter:
     - assets/images/img_marketing.png
     - assets/images/frame-ilustrasi1.png
     - assets/images/lingakaran-kiri1.png
-    - assets/images/lingkarkanan1.png
+    - assets/images/frame-ilustrasi2.png
+    - assets/images/lingk.kanan2.png
+    - assets/images/lingk-kiri2.png
+    - assets/images/frame-ilustrasi3.png
+    - assets/images/lingk-kiri3.png
+    - assets/images/lingk-kanan3.png
+    - assets/images/pesawat.png
+    - assets/images/ornamen-kiri.png
+    - assets/images/ornamen-kanan.png

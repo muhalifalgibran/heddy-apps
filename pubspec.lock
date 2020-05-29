@@ -167,6 +167,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  flutter_dash:
+    dependency: "direct main"
+    description:
+      name: flutter_dash
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1"
   flutter_launcher_icons:
     dependency: "direct main"
     description:

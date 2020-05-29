@@ -7,16 +7,34 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   title: Text(
+      //     'Masuk Akun',
+      //     style: TextStyle(
+      //         color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
+      //   ),
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0.0,
+      // ),
       backgroundColor: HexColor("2E3D68"),
       body: SafeArea(
         child: Container(
+          decoration: BoxDecoration(gradient: AppColor.blueGradient),
           child: Stack(
             children: <Widget>[
+              Positioned(
+                child: AppBar(
+                  title: Text("Masuk Akun"),
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  actions: <Widget>[],
+                ),
+              ),
               background(context),
-              Center(child: info()),
               Align(
                   alignment: Alignment.bottomCenter,
-                  child: fixBottomSheet(context))
+                  child: fixBottomSheet(context)),
+              Center(child: info()),
             ],
           ),
         ),
@@ -27,13 +45,19 @@ class SignIn extends StatelessWidget {
   Widget background(context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 2.0),
-      child: ClipPath(
-        clipper: ClippingClass(),
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(color: AppColor.primaryColor),
-        ),
+      child: Stack(
+        children: <Widget>[
+          ClipPath(
+            clipper: ClippingClass(),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+            ),
+          ),
+          Align(
+              alignment: Alignment.topRight,
+              child: Image.asset('assets/images/ornamen-kanan.png'))
+        ],
       ),
     );
   }
@@ -41,26 +65,10 @@ class SignIn extends StatelessWidget {
   Widget info() {
     return Column(
       children: <Widget>[
-        Image.asset('assets/images/img_marketing.png'),
         SizedBox(
-          height: 30.0,
+          height: 70.0,
         ),
-        Text(
-          'Say hi to your self-care journal',
-          style: TextStyle(
-              color: Colors.white, fontSize: 20.0, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(
-          height: 10.0,
-        ),
-        Text(
-          'Feel better, sleep better. We’re a guided \n journal made with therapists..',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 14.0,
-          ),
-          textAlign: TextAlign.center,
-        )
+        Image.asset('assets/images/pesawat.png'),
       ],
     );
   }
@@ -68,12 +76,12 @@ class SignIn extends StatelessWidget {
   Widget fixBottomSheet(context) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: 150.0,
+        height: 520.0,
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(10.0),
-                topRight: const Radius.circular(10.0))),
+                topLeft: const Radius.circular(50.0),
+                topRight: const Radius.circular(50.0))),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(12.0),
@@ -96,11 +104,11 @@ class SignIn extends StatelessWidget {
                 SizedBox(
                   height: 12.0,
                 ),
-                Row(
+                Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     FlatButton(
-                      color: AppColor.primaryColor,
+                      color: HexColor('4267B2'),
                       textColor: Colors.white,
                       disabledColor: Colors.grey,
                       disabledTextColor: Colors.black,
@@ -114,12 +122,20 @@ class SignIn extends StatelessWidget {
                       child: Row(
                         children: <Widget>[
                           Icon(LineIcons.facebook),
-                          Text(
-                            "Facebook",
-                            style: TextStyle(fontSize: 14.0),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Masuk dengan Facebook",
+                                style: TextStyle(fontSize: 14.0),
+                              ),
+                            ),
                           ),
                         ],
                       ),
+                    ),
+                    SizedBox(
+                      height: 10.0,
                     ),
                     OutlineButton(
                       color: Colors.white,
@@ -135,13 +151,50 @@ class SignIn extends StatelessWidget {
                       child: Row(
                         children: <Widget>[
                           Icon(LineIcons.google),
-                          Text(
-                            "Google",
-                            style: TextStyle(fontSize: 14.0),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Masuk dengan Google",
+                                style: TextStyle(fontSize: 14.0),
+                              ),
+                            ),
                           ),
                         ],
                       ),
-                    )
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Container(
+                                height: 1.0,
+                                width: 80.0,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              "atau masuk dengan email",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12.0),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Container(
+                                height: 1.0,
+                                width: 80.0,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        )),
                   ],
                 )
               ],
