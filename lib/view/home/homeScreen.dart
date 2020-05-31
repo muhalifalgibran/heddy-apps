@@ -7,6 +7,7 @@ import 'package:fit_app/view/profile/profileScreen.dart';
 import 'package:fit_app/view/sporttracker/sportScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:native_color/native_color.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,9 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
-  int _currentTab = 0;
-
   final List<BaseHomeFragment> fragments = <BaseHomeFragment>[
     ProfileFragment(0),
     BodyCheckFragment(1),
@@ -47,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<HomeScreenBloc, int>(builder: (context, index) {
       return BottomNavyBar(
         selectedIndex: index,
+        backgroundColor: HexColor('283761'),
         showElevation: true, // use this to remove appBar's elevation
         onItemSelected: (index) => fragments[index].onTabSelected(context),
         items: fragments.map((f) => f.bottomNavyBarItem).toList(),

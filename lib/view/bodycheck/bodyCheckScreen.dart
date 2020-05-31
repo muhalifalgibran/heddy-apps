@@ -14,7 +14,7 @@ class BodyCheckFragment implements BaseHomeFragment {
     icon: Icon(LineIcons.heart),
     title: Text('Body Check'),
     activeColor: Colors.redAccent,
-    inactiveColor: Colors.grey,
+    inactiveColor: Colors.white,
   );
 
   @override

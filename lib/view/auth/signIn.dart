@@ -1,21 +1,20 @@
 import 'package:fit_app/core/res/app_color.dart';
+import 'package:fit_app/view/home/homeScreen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dash/flutter_dash.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:native_color/native_color.dart';
 
-class SignIn extends StatelessWidget {
+class SignIn extends StatefulWidget {
+  @override
+  _SignInState createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(
-      //     'Masuk Akun',
-      //     style: TextStyle(
-      //         color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.0),
-      //   ),
-      //   backgroundColor: Colors.transparent,
-      //   elevation: 0.0,
-      // ),
       backgroundColor: HexColor("2E3D68"),
       body: SafeArea(
         child: Container(
@@ -85,21 +84,25 @@ class SignIn extends StatelessWidget {
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(12.0),
-            child: Column(
+            child: ListView(
               children: <Widget>[
-                Text(
-                  "Selamat Datang!",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0),
+                Center(
+                  child: Text(
+                    "Selamat Datang!",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0),
+                  ),
                 ),
                 SizedBox(
                   height: 8.0,
                 ),
-                Text(
-                  "Kamu bisa lanjut pake akun media sosialmu",
-                  style: TextStyle(color: Colors.black, fontSize: 14.0),
+                Center(
+                  child: Text(
+                    "Kamu bisa lanjut pake akun media sosialmu",
+                    style: TextStyle(color: Colors.black, fontSize: 14.0),
+                  ),
                 ),
                 SizedBox(
                   height: 12.0,
@@ -174,10 +177,9 @@ class SignIn extends StatelessWidget {
                           children: <Widget>[
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Container(
-                                height: 1.0,
-                                width: 80.0,
-                                color: Colors.grey,
+                              child: Dash(
+                                length: 80.0,
+                                dashColor: Colors.grey,
                               ),
                             ),
                             Text(
@@ -187,20 +189,109 @@ class SignIn extends StatelessWidget {
                             ),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 10.0),
-                              child: Container(
-                                height: 1.0,
-                                width: 80.0,
-                                color: Colors.grey,
+                              child: Dash(
+                                length: 80.0,
+                                dashColor: Colors.grey,
                               ),
                             ),
                           ],
                         )),
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    form()
                   ],
                 )
               ],
             ),
           ),
         ));
+  }
+
+  bool _obscureText = true;
+
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  Widget form() {
+    return Column(
+      children: <Widget>[
+        TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+              labelText: 'Email', hintText: "asdfghjk@aaaa.com"),
+        ),
+        TextFormField(
+          obscureText: _obscureText,
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+              labelText: 'Password',
+              hintText: 'Password',
+              suffixIcon: FlatButton(
+                  onPressed: _toggle,
+                  child: Icon(
+                    _obscureText ? Icons.visibility : Icons.visibility_off,
+                    color: HexColor('2D9CDB'),
+                  ))),
+        ),
+        SizedBox(
+          height: 30.0,
+        ),
+        FlatButton(
+          color: HexColor('2D9CDB'),
+          textColor: Colors.white,
+          disabledColor: Colors.grey,
+          disabledTextColor: Colors.black,
+          padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+          splashColor: Colors.blueAccent,
+          shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(30.0)),
+          onPressed: () {
+            /*...*/
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          },
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Masuk",
+                    style: TextStyle(fontSize: 14.0),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 5.0),
+        RichText(
+          text: TextSpan(
+            style: TextStyle(fontSize: 10.0, color: Colors.grey),
+            children: <TextSpan>[
+              TextSpan(
+                  text: 'Lupa Kata Sandi ? ',
+                  style:
+                      TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0)),
+              TextSpan(
+                  text: 'Dapatkan Bantuan untuk Masuk!',
+                  recognizer: new TapGestureRecognizer()
+                    ..onTap = () {
+                      print('Tap Here onTap');
+                    },
+                  style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 12.0,
+                      color: AppColor.primaryColor)),
+            ],
+          ),
+        )
+      ],
+    );
   }
 }
 

@@ -3,7 +3,6 @@ import 'package:fit_app/core/utils/formUtils.dart';
 import 'package:fit_app/view/auth/registration/dialogs/bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:native_color/native_color.dart';
 
 class SignUp extends StatefulWidget {
@@ -13,7 +12,6 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   int _selectedIndex = 1;
-  int _currentTab = 0;
 
   List<IconData> _icons = [
     FontAwesomeIcons.sadTear,

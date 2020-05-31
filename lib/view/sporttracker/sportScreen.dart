@@ -13,7 +13,7 @@ class SportTrackerFragment implements BaseHomeFragment {
     icon: Icon(LineIcons.road),
     title: Text('Sport Track'),
     activeColor: Colors.orangeAccent,
-    inactiveColor: Colors.grey,
+    inactiveColor: Colors.white,
   );
 
   @override

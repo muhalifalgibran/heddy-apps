@@ -1,7 +1,6 @@
 import 'package:fit_app/core/res/app_color.dart';
 import 'package:fit_app/view/auth/signIn.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class FlashScreen extends StatefulWidget {
@@ -11,7 +10,7 @@ class FlashScreen extends StatefulWidget {
 
 class _FlashScreenState extends State<FlashScreen> {
   PageController _controller;
-  String _txtBtn = 'Lanjut';
+  String _txtBtn = 'Lanjut     >';
 
   @override
   void initState() {
@@ -49,17 +48,19 @@ class _FlashScreenState extends State<FlashScreen> {
                 SizedBox(
                   width: 24.0,
                 ),
-                SmoothPageIndicator(
-                  controller: _controller,
-                  count: 3,
-                  effect: WormEffect(),
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: SmoothPageIndicator(
+                    controller: _controller,
+                    count: 3,
+                    effect: WormEffect(),
+                  ),
                 ),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width - 250.0,
+                  width: MediaQuery.of(context).size.width - 200.0,
                 ),
-                RaisedButton(
-                  color: AppColor.primaryColor,
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
                     if (_controller.hasClients) {
                       _controller.nextPage(
                         duration: const Duration(milliseconds: 400),
@@ -67,12 +68,12 @@ class _FlashScreenState extends State<FlashScreen> {
                       );
                       if (_controller.page == 1) {
                         setState(() {
-                          _txtBtn = "Mulai";
+                          _txtBtn = "Mulai     >";
                         });
                       } else {
                         setState(() {
                           if (_controller.page < 1) {
-                            _txtBtn = "Lanjut";
+                            _txtBtn = "Lanjut     >";
                           }
                         });
                       }
@@ -84,7 +85,9 @@ class _FlashScreenState extends State<FlashScreen> {
                   },
                   child: Text(
                     _txtBtn,
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                        color: AppColor.primaryColor,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -318,7 +321,7 @@ class _FlashScreenState extends State<FlashScreen> {
                           fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "Feel better, sleep better. We’re a guided \njournal made with therapists..",
+                      "Cairan tubuh yang selalu terpenuhi \ndapat buat kamu fokus sepanjang hari",
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: 14.0,

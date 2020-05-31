@@ -1,6 +1,6 @@
 import 'package:fit_app/core/response/base_response.dart';
 import 'package:fit_app/entities/daily_mission.dart';
-import 'package:fit_app/repository/daily_m_repository.dart';
+import 'package:fit_app/repository/user_activity_repository.dart';
 
 class GetTodoUsecase {
   final DailyMRepository _dailyMRepository;

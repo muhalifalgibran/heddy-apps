@@ -13,7 +13,7 @@ class CommunityFragment implements BaseHomeFragment {
     icon: Icon(LineIcons.group),
     title: Text('Komunitas'),
     activeColor: Colors.green,
-    inactiveColor: Colors.grey,
+    inactiveColor: Colors.white,
   );
 
   @override

@@ -13,12 +13,7 @@ class _CheckBoxBCState extends State<CheckBoxBC> {
     'Proper Sleep': false,
     'Weight Managemet': false,
     'Caffein': false,
-    'Food': false,
-    'Caffein': false,
-    'Caffein': false,
-    'Caffein': false,
-    'Caffein': false,
-    'Caffein': false,
+    'Food': false
   };
 
   var tempArray = [];

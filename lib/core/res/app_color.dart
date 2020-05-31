@@ -3,12 +3,23 @@ import 'package:native_color/native_color.dart';
 
 class AppColor {
   // solid
-  static Color appBackground = HexColor('F3F3F3');
-  static Color primaryColor = HexColor('283761');
-  static Color secondaryColor = HexColor('F3F3F3');
-  static Color primaryDarkColor = HexColor('BD5454');
-  static Color accentColor = HexColor('FF8C9F');
+  static Color appBackground = Colors.white;
+  static Color primaryColor = HexColor('11458C');
+  static Color secondaryColor = HexColor('2D9CDB');
+  static Color blueCyan = HexColor('36DEED');
+  static Color blueHard = HexColor('4F6DF5');
   static Color profileBgColor = HexColor('B4B4B4');
+  static Color pinkHard = HexColor('F54F8C');
+  static Color yellowHard = HexColor('FFAC00');
+  static Color blueCyanSoft = HexColor('CFF1F0');
+  static Color blueSoft = HexColor('D4DBFC');
+  static Color pinkSoft = HexColor('FCD4E3');
+  static Color yellowSoft = HexColor('FFEBC1');
+
+  //font
+  static Color primaryColorFont = HexColor('333333');
+  static Color colorCaption = HexColor('4F4F4F');
+  static Color colorParagraphGrey = HexColor('828282');
 
   // gradient
   static Gradient blueGradient = LinearGradient(colors: <Color>[
@@ -18,3 +29,5 @@ class AppColor {
     HexColor('C8E5FF'),
   ], end: Alignment.bottomCenter, begin: Alignment.topCenter);
 }
+
+class AppFont {}

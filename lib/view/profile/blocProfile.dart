@@ -1,36 +1,21 @@
-import 'package:fit_app/core/blocs/scroll_fragment_bloc.dart';
-import 'package:fit_app/core/firebase/f_daily_repository.dart';
-import 'package:fit_app/entities/daily_mission.dart';
-import 'package:fit_app/repository/daily_m_repository.dart';
-import 'package:fit_app/usecases/get_todo_usecase.dart';
+import 'package:fit_app/models/user_activity.dart';
+import 'package:fit_app/repository/user_activity_repo.dart';
+import 'package:rxdart/rxdart.dart';
 
-class ProfileBloc extends ScrollFragmentBloc<DailyMission> {
-  final GetTodoUsecase getTodoList;
+class ProfileBloc {
+  final _repository = UserActivityRepository();
+  final _userActFetcher = PublishSubject<UserActivity>();
 
-  ProfileBloc({DailyMRepository dailyMRepository})
-      : this.getTodoList = GetTodoUsecase(dailyMRepository ?? DailyRepository);
+  Stream<UserActivity> get userAct => _userActFetcher.stream;
 
-  @override
-  ScrollFragmentState<DailyMission> get initialState =>
-      ScrollFragmentState(items);
+  fetchUserActivity() async {
+    UserActivity userActivity = await _repository.fetchUserActivity();
+    _userActFetcher.sink.add(userActivity);
+  }
 
-  @override
-  Stream<ScrollFragmentState<DailyMission>> mapEventToState(
-      ScrollFragmentEvent event) async* {
-    print("hai");
-    if (event is Init) {
-      print("wkwk");
-      final result = await getTodoList.start();
-      if (result.isSuccess()) {
-        items.addAll(result.data.dailyMission);
-      } else {
-        print("nul");
-      }
-      yield ScrollFragmentState(items);
-    } else if (event is Add<DailyMission>) {
-      print("hai");
-      items..add(event.item);
-      yield ScrollFragmentState(items);
-    }
+  dispose() {
+    _userActFetcher.close();
   }
 }
+
+final bloc = ProfileBloc();

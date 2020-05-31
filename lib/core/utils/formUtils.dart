@@ -1,4 +1,3 @@
-import 'package:fit_app/core/blocs/scroll_fragment_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
