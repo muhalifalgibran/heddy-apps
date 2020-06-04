@@ -3,7 +3,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -28,6 +28,11 @@ dependencies:
   flutter_dash: ^0.0.1
   flat_icons_flutter: ^1.0.2
   google_fonts: ^1.1.0
+  fluttericon: ^1.0.7
+  google_sign_in: ^4.5.1
+  shared_preferences: ^0.5.7+3
+  get_it: ^4.0.2
+  date_format: ^1.0.8
 
 dev_dependencies:
   flutter_test:
@@ -54,3 +59,11 @@ flutter:
     - assets/images/pesawat.png
     - assets/images/ornamen-kiri.png
     - assets/images/ornamen-kanan.png
+
+    # cup
+    - assets/images/cup100.png
+    - assets/images/cup150.png
+    - assets/images/cup200.png
+    - assets/images/cup300.png
+    - assets/images/cup400.png
+    - assets/images/cup600.png

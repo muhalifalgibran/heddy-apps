@@ -1,4 +1,9 @@
+import 'package:fit_app/core/firebase/firebase_auth.dart';
 import 'package:fit_app/core/res/app_color.dart';
+import 'package:fit_app/core/tools/injector.dart';
+import 'package:fit_app/models/first_auth.dart';
+import 'package:fit_app/network/Response.dart';
+import 'package:fit_app/view/auth/auth_bloc.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +17,17 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  var _bloc = AuthBloc();
+
+  void loginState(bool loggedIn) {
+    if (loggedIn) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()),
+        ModalRoute.withName('/homeScreen'),
+      );
+    } else {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +48,33 @@ class _SignInState extends State<SignIn> {
               background(context),
               Align(
                   alignment: Alignment.bottomCenter,
-                  child: fixBottomSheet(context)),
+                  child: StreamBuilder<Response<FirstAuth>>(
+                      stream: _bloc.authDataStream,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          print("snapshot:" + snapshot.data.data.toString());
+                          switch (snapshot.data.status) {
+                            case Status.LOADING:
+                              print("l");
+                              return CircularProgressIndicator();
+                              break;
+                            case Status.SUCCESS:
+                              //TODO bikin case kalau profil lengkap dengan belum lengkap
+                              print("s");
+                              setupLocatorToken(
+                                  snapshot.data.data.message.token);
+                              _bloc.dispose();
+                              break;
+                            case Status.ERROR:
+                              print("e" + snapshot.data.message);
+                              return fixBottomSheet(context);
+                              break;
+                          }
+                        } else {
+                          print("2");
+                        }
+                        return fixBottomSheet(context);
+                      })),
               Center(child: info()),
             ],
           ),
@@ -150,6 +192,13 @@ class _SignInState extends State<SignIn> {
                           borderRadius: new BorderRadius.circular(30.0)),
                       onPressed: () {
                         /*...*/
+                        signInWithGoogle().then((user) => {
+                              // setupLocator(user),
+                              _bloc.fetchFirstAuth(user.uid, user.displayName,
+                                  user.email, user.photoUrl),
+                              Navigator.of(context).pushNamedAndRemoveUntil(
+                                  '/home', (Route<dynamic> route) => false)
+                            });
                       },
                       child: Row(
                         children: <Widget>[

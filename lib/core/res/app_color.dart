@@ -8,6 +8,7 @@ class AppColor {
   static Color secondaryColor = HexColor('2D9CDB');
   static Color blueCyan = HexColor('36DEED');
   static Color blueHard = HexColor('4F6DF5');
+  static Color blueGrey = HexColor('F6F9FB');
   static Color profileBgColor = HexColor('B4B4B4');
   static Color pinkHard = HexColor('F54F8C');
   static Color yellowHard = HexColor('FFAC00');
@@ -20,6 +21,7 @@ class AppColor {
   static Color primaryColorFont = HexColor('333333');
   static Color colorCaption = HexColor('4F4F4F');
   static Color colorParagraphGrey = HexColor('828282');
+  static Color colorParagraphGrey2 = HexColor('BDBDBD');
 
   // gradient
   static Gradient blueGradient = LinearGradient(colors: <Color>[

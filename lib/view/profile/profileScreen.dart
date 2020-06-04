@@ -1,15 +1,24 @@
+import 'dart:ui';
+
 import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+import 'package:fit_app/core/firebase/firebase_auth.dart';
 import 'package:fit_app/core/res/app_color.dart';
+import 'package:fit_app/core/tools/injector.dart';
 import 'package:fit_app/models/user_activity.dart';
+import 'package:fit_app/network/Response.dart';
+import 'package:fit_app/view/auth/signIn.dart';
 import 'package:fit_app/view/home/bloc.dart';
 import 'package:fit_app/view/home/fragment.dart';
 import 'package:fit_app/view/profile/blocProfile.dart';
+import 'package:fit_app/view/profile/foodComsumtion/food_consumtion.dart';
 import 'package:fit_app/view/profile/waterConsumtion/water_consumtion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttericon/entypo_icons.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:native_color/native_color.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:fit_app/core/tools/constants.dart' as Constants;
 
 class ProfileFragment implements BaseHomeFragment {
   ProfileFragment(this.position);
@@ -39,10 +48,20 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  static GetPreferences userRef = locator<GetPreferences>();
+  String photoUrl = userRef.photoUrl;
+  String name = userRef.name;
+  ProfileBloc _bloc;
+  // static GetToken userRef1 = locator<GetToken>();
   @override
   void initState() {
-    bloc.fetchUserActivity();
+    // getStringValuesSF();
+    // bloc.fetchUserActivity();
+
     super.initState();
+    // print("token :  1:" + userRef1.token);
+    print(Constants.token);
+    _bloc = ProfileBloc();
   }
 
   @override
@@ -54,37 +73,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(bottom: 2.0),
-          child: ClipPath(
-            clipper: ClippingClass(),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: 320.0,
-              decoration: BoxDecoration(gradient: AppColor.blueGradient),
-            ),
-          ),
+      body: RefreshIndicator(
+        onRefresh: () => _bloc.fetchUserPr(),
+        child: StreamBuilder<Response<UserActivity>>(
+          stream: _bloc.profileDataStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              switch (snapshot.data.status) {
+                case Status.LOADING:
+                  return BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: 5,
+                        sigmaY: 5,
+                      ),
+                      child: Stack(children: <Widget>[
+                        CircularProgressIndicator(),
+                        background(context)
+                      ]));
+                  break;
+                case Status.SUCCESS:
+                  return stack(snapshot.data.data);
+                  break;
+                case Status.ERROR:
+                  print(snapshot.data.message);
+                  // return Center(child: Text("Periksa kembali jaringan anda"));
+                  return Error(
+                    errorMessage: snapshot.data.message,
+                    onRetryPressed: () => _bloc.fetchUserPr(),
+                  );
+                  break;
+              }
+            }
+            return Container();
+          },
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 12.0, right: 12.0),
-          child: ListView(padding: EdgeInsets.all(0), children: <Widget>[
-            SizedBox(height: 50),
-            cardProfile(context),
-            SizedBox(height: 10.0),
-            cardPedometer(context),
-            SizedBox(height: 10.0),
-            fitCards(),
-            // profile(context),
-            // SizedBox(
-            //   height: 20,
-            // ),
-            // dailyMission(context),
-            // //  dailyMissionDone(context)
-          ]),
-        ),
-      ]),
+      ),
     );
+  }
+
+  Widget background(context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2.0),
+      child: ClipPath(
+        clipper: ClippingClass(),
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: 320.0,
+          decoration: BoxDecoration(gradient: AppColor.blueGradient),
+        ),
+      ),
+    );
+  }
+
+  Widget stack(UserActivity user) {
+    return Stack(children: <Widget>[
+      background(context),
+      Padding(
+        padding: EdgeInsets.only(left: 12.0, right: 12.0),
+        child: ListView(padding: EdgeInsets.all(0), children: <Widget>[
+          SizedBox(height: 50),
+          cardProfile(context),
+          SizedBox(height: 10.0),
+          cardPedometer(context, user),
+          SizedBox(height: 10.0),
+          fitCards(context),
+          // profile(context),
+          // SizedBox(
+          //   height: 20,
+          // ),
+          // dailyMission(context),
+          // //  dailyMissionDone(context)
+        ]),
+      ),
+    ]);
   }
 
   Widget cardProfile(BuildContext context) {
@@ -101,8 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Row(
                 children: <Widget>[
                   CircleAvatar(
-                    backgroundImage: NetworkImage(
-                        "https://pbs.twimg.com/media/EM5QvUDXkAI6h5N.jpg"),
+                    backgroundImage: NetworkImage("$photoUrl"),
                     backgroundColor: Colors.grey,
                     radius: 24.0,
                   ),
@@ -113,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 5.0,
                       ),
                       Text(
-                        "Riski Wahyu",
+                        "$name",
                         textAlign: TextAlign.left,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -131,111 +191,140 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     width: 180.0,
                     height: 10,
                   ),
-                  Icon(LineIcons.edit)
+                  GestureDetector(
+                      onTap: () {
+                        _showDialog();
+                      },
+                      child: Icon(Entypo.logout))
                 ],
               )),
         ));
   }
 
-  Widget cardPedometer(BuildContext context) {
-    return StreamBuilder(
-        stream: bloc.userAct,
-        builder: (context, AsyncSnapshot<UserActivity> snapshot) {
-          if (snapshot.hasData) {
-            return SizedBox(
-              width: double.infinity,
-              height: 270.0,
-              child: Card(
-                elevation: 10.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        child: Text(
-                          "Hari ke 1/30",
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              color: AppColor.primaryColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        width: double.infinity,
-                        height: 20.0,
-                      ),
-                      CircularPercentIndicator(
-                        radius: 130.0,
-                        animation: true,
-                        animationDuration: 1200,
-                        lineWidth: 5.0,
-                        percent: 0.4,
-                        center: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 30.0,
-                            ),
-                            Text(
-                              "13 Mei 2020",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10.0,
-                                  color: AppColor.primaryColor),
-                            ),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            Text(
-                              "1600",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25.0,
-                                  color: AppColor.primaryColor),
-                            ),
-                            SizedBox(
-                              height: 5.0,
-                            ),
-                            Text(
-                              "/8000 langkah harian",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w100, fontSize: 10.0),
-                            ),
-                          ],
-                        ),
-                        circularStrokeCap: CircularStrokeCap.butt,
-                        backgroundColor: AppColor.primaryColor,
-                        progressColor: Colors.red,
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          fitSetWater(
-                              snapshot.data.data.mineralWaterConsumption),
-                          iconSeparator(),
-                          fitSetCal(snapshot.data.data.calorieFoods),
-                          iconSeparator(),
-                          fitSetSleep(snapshot.data.data.sleepDuration),
-                          iconSeparator(),
-                          fitSetFood(snapshot.data.data.calorieFoods)
-                        ],
-                      )
-                    ],
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Logout"),
+          content: new Text("Ingin keluar dari aplikasi?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Oke"),
+              onPressed: () {
+                signOutGoogle();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return SignIn();
+                    },
                   ),
+                );
+              },
+            ),
+
+            new FlatButton(
+              child: new Text("Batal"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget cardPedometer(BuildContext context, UserActivity user) {
+    return SizedBox(
+      width: double.infinity,
+      height: 270.0,
+      child: Card(
+        elevation: 10.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: Colors.white,
+        child: Padding(
+          padding: EdgeInsets.all(12.0),
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                child: Text(
+                  "Hari ke 1/30",
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                      color: AppColor.primaryColor,
+                      fontWeight: FontWeight.bold),
                 ),
+                width: double.infinity,
+                height: 20.0,
               ),
-            );
-          } else if (snapshot.hasData) {
-            return Center(child: Text(snapshot.error.toString()));
-          }
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        });
+              CircularPercentIndicator(
+                radius: 130.0,
+                animation: true,
+                animationDuration: 1200,
+                lineWidth: 5.0,
+                percent: 0.4,
+                center: Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    Text(
+                      "13 Mei 2020",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 10.0,
+                          color: AppColor.primaryColor),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Text(
+                      "1600",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25.0,
+                          color: AppColor.primaryColor),
+                    ),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Text(
+                      "/8000 langkah harian",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w100, fontSize: 10.0),
+                    ),
+                  ],
+                ),
+                circularStrokeCap: CircularStrokeCap.butt,
+                backgroundColor: AppColor.primaryColor,
+                progressColor: Colors.red,
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  fitSetWater(user.data.mineralWaterConsumption),
+                  iconSeparator(),
+                  fitSetCal(user.data.calorieFoods),
+                  iconSeparator(),
+                  fitSetSleep(user.data.sleepDuration),
+                  iconSeparator(),
+                  fitSetFood(user.data.calorieFoods)
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget iconSeparator() {
@@ -337,10 +426,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget fitCards() {
+  Widget fitCards(context) {
     return Column(
       children: <Widget>[
-        waterCard(),
+        waterCard(context),
         SizedBox(
           height: 8.0,
         ),
@@ -360,7 +449,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget waterCard() {
+  Widget waterCard(context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
@@ -417,49 +506,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget caloryCard() {
-    return SizedBox(
-      height: 90.0,
-      width: double.infinity,
-      child: Card(
-        elevation: 5.0,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            children: <Widget>[
-              Align(
-                alignment: Alignment.topLeft,
-                child: Card(
-                    color: HexColor('add0ff'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        LineIcons.fire,
-                        size: 16.0,
-                        color: HexColor('2F80ED'),
-                      ),
-                    )),
-              ),
-              SizedBox(width: 5.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                verticalDirection: VerticalDirection.down,
-                children: <Widget>[
-                  Text(
-                    "Kalori yang terbakar",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    "Segelas air akan Anda konsentrasi \ndan tetap segar.",
-                    style:
-                        TextStyle(fontWeight: FontWeight.w400, fontSize: 12.0),
-                  ),
-                ],
-              ),
-            ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => FoodConsumtion()));
+      },
+      child: SizedBox(
+        height: 90.0,
+        width: double.infinity,
+        child: Card(
+          elevation: 5.0,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Card(
+                      color: HexColor('add0ff'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Icon(
+                          LineIcons.fire,
+                          size: 16.0,
+                          color: HexColor('2F80ED'),
+                        ),
+                      )),
+                ),
+                SizedBox(width: 5.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  verticalDirection: VerticalDirection.down,
+                  children: <Widget>[
+                    Text(
+                      "Konsumsi Makan",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Text(
+                      "Segelas air akan Anda konsentrasi \ndan tetap segar.",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w400, fontSize: 12.0),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -565,6 +660,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class Error extends StatelessWidget {
+  final String errorMessage;
+
+  final Function onRetryPressed;
+
+  const Error({Key key, this.errorMessage, this.onRetryPressed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            "Pastikan kamu terhubung dengan internet",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+            ),
+          ),
+          SizedBox(height: 8),
+          RaisedButton(
+            color: Colors.white,
+            child: Text('Retry', style: TextStyle(color: Colors.black)),
+            onPressed: onRetryPressed,
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class Loading extends StatelessWidget {
+  final String loadingMessage;
+
+  const Loading({Key key, this.loadingMessage}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            loadingMessage,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+            ),
+          ),
+          SizedBox(height: 24),
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        ],
       ),
     );
   }
