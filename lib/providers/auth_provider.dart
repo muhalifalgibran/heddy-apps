@@ -24,7 +24,6 @@ class AuthProvider {
       print("res: " + response.body.toString());
       print(response.statusCode);
       responseJson = CustomException().response(response);
-      print("ss3");
     } on SocketException {
       print("s4");
       throw FetchDataException('No Internet connection');

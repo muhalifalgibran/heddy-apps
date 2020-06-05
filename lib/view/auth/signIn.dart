@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fit_app/core/firebase/firebase_auth.dart';
 import 'package:fit_app/core/res/app_color.dart';
 import 'package:fit_app/core/tools/injector.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:native_color/native_color.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -26,6 +28,24 @@ class _SignInState extends State<SignIn> {
         ModalRoute.withName('/homeScreen'),
       );
     } else {}
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void saveData(FirebaseUser user) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _prefs.setString('email', user.email);
+    _prefs.setString('name', user.displayName);
+    _prefs.setString('uid', user.uid);
+    _prefs.setString('photoUrl', user.photoUrl);
+  }
+
+  void saveToken(String token) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _prefs.setString('token', token);
   }
 
   @override
@@ -60,9 +80,8 @@ class _SignInState extends State<SignIn> {
                               break;
                             case Status.SUCCESS:
                               //TODO bikin case kalau profil lengkap dengan belum lengkap
-                              print("s");
-                              setupLocatorToken(
-                                  snapshot.data.data.message.token);
+                              print("logged in 2");
+                              saveToken(snapshot.data.data.message.token);
                               _bloc.dispose();
                               break;
                             case Status.ERROR:
@@ -193,7 +212,9 @@ class _SignInState extends State<SignIn> {
                       onPressed: () {
                         /*...*/
                         signInWithGoogle().then((user) => {
-                              // setupLocator(user),
+                              print("asas"),
+                              print(user.email),
+                              saveData(user),
                               _bloc.fetchFirstAuth(user.uid, user.displayName,
                                   user.email, user.photoUrl),
                               Navigator.of(context).pushNamedAndRemoveUntil(

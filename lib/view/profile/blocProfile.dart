@@ -5,12 +5,21 @@ import 'package:fit_app/models/user_activity.dart';
 import 'package:fit_app/network/Response.dart';
 import 'package:fit_app/repository/user_activity_repo.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileBloc {
   final _repository = UserActivityRepository();
   final _userActFetcher = PublishSubject<UserActivity>();
   static GetToken userRef = locator<GetToken>();
   StreamController _dataController;
+  String token;
+
+  Future<String> getToken() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    token = pref.getString('token');
+    // print(pref.getString('token'));
+    return pref.getString('token');
+  }
 
   Stream<UserActivity> get userAct => _userActFetcher.stream;
 
@@ -22,8 +31,8 @@ class ProfileBloc {
 
   ProfileBloc() {
     _dataController = StreamController<Response<UserActivity>>();
-    fetchUserPr();
-    print("bloc called");
+    // fetchUserPr();
+    print("a");
   }
 
   fetchUserActivity() async {

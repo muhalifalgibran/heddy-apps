@@ -3,7 +3,6 @@ import 'package:fit_app/view/auth/splashScreen.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());

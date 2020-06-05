@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:fit_app/core/tools/injector.dart';
 import 'package:fit_app/models/general_post.dart';
 import 'package:fit_app/models/today_water_consum.dart';
 import 'package:fit_app/network/Response.dart';

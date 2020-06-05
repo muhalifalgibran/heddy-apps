@@ -19,6 +19,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:native_color/native_color.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:fit_app/core/tools/constants.dart' as Constants;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileFragment implements BaseHomeFragment {
   ProfileFragment(this.position);
@@ -49,19 +50,27 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   static GetPreferences userRef = locator<GetPreferences>();
-  String photoUrl = userRef.photoUrl;
-  String name = userRef.name;
+  String photoUrl;
+  String name;
+  String email;
   ProfileBloc _bloc;
-  // static GetToken userRef1 = locator<GetToken>();
   @override
   void initState() {
-    // getStringValuesSF();
-    // bloc.fetchUserActivity();
-
     super.initState();
-    // print("token :  1:" + userRef1.token);
     print(Constants.token);
+    getNama().then((value) {
+      name = value.getString('name');
+      email = value.getString('email');
+      photoUrl = value.getString('photoUrl');
+      // print("token1 :" + value.getString('token'));
+    });
     _bloc = ProfileBloc();
+    _bloc.fetchUserPr();
+  }
+
+  Future<SharedPreferences> getNama() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref;
   }
 
   @override
@@ -168,27 +177,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   SizedBox(width: 12),
                   Column(
+                    textDirection: TextDirection.ltr,
+                    textBaseline: TextBaseline.alphabetic,
                     children: <Widget>[
                       SizedBox(
                         height: 5.0,
                       ),
                       Text(
                         "$name",
-                        textAlign: TextAlign.left,
+                        textAlign: TextAlign.start,
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(
                         height: 2.0,
                       ),
                       Text(
-                        "Laki-laki, 17thn",
+                        "$email",
+                        textAlign: TextAlign.start,
                         style: TextStyle(
                             fontWeight: FontWeight.w100, fontSize: 12.0),
                       )
                     ],
                   ),
                   SizedBox(
-                    width: 180.0,
+                    width: 120.0,
                     height: 10,
                   ),
                   GestureDetector(
@@ -213,7 +225,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("Oke"),
+              child: new Text("Batal"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+
+            new FlatButton(
+              child: new Text(
+                "Oke",
+                style: TextStyle(color: AppColor.primaryColor),
+              ),
               onPressed: () {
                 signOutGoogle();
                 Navigator.of(context).push(
@@ -223,13 +245,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                 );
-              },
-            ),
-
-            new FlatButton(
-              child: new Text("Batal"),
-              onPressed: () {
-                Navigator.pop(context);
               },
             ),
           ],

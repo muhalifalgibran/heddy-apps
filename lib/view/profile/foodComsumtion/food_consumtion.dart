@@ -1,6 +1,9 @@
 import 'package:fit_app/core/res/app_color.dart';
+import 'package:fit_app/models/food_consumtion.dart';
+import 'package:fit_app/network/Response.dart';
+import 'package:fit_app/view/profile/foodComsumtion/food_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttericon/entypo_icons.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -9,9 +12,53 @@ class FoodConsumtion extends StatefulWidget {
   _FoodConsumtionState createState() => _FoodConsumtionState();
 }
 
+class Item {
+  String imageUrl;
+  int rank;
+  Item(this.imageUrl, this.rank);
+}
+
 class _FoodConsumtionState extends State<FoodConsumtion> {
+  List<Item> itemList;
+  List<Item> selectedList;
+  bool _isDisabled = true;
+  var _onPressed;
+  DateTime _dateTime = DateTime.now();
+  final textEdit = TextEditingController();
+  int _selectedIndex;
+
+  FoodBloc _bloc;
+
+  @override
+  void initState() {
+    loadList();
+    super.initState();
+    _bloc = FoodBloc();
+    textEdit.addListener(_printLatestValue);
+  }
+
+  _printLatestValue() {
+    // print("Second text field: ${textEdit.text}");
+    String _search;
+    textEdit.text.isEmpty ? _search = "" : _search = textEdit.text.toString();
+    _bloc.postWater(_selectedIndex + 1, _search);
+  }
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+    textEdit.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_isDisabled) {
+      _onPressed = () {
+        print("tap");
+        datePickerDialog();
+      };
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("Konsumsi Makan"),
@@ -26,6 +73,50 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
           child: ListView(
             children: <Widget>[
               topCard(),
+              SizedBox(height: 16.0),
+              SizedBox(
+                height: 240,
+                child: StreamBuilder<Response<FoodConsumtionModel>>(
+                    stream: _bloc.foodDataStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        switch (snapshot.data.status) {
+                          case Status.LOADING:
+                            return Container();
+                            break;
+                          case Status.SUCCESS:
+                            // setState(() {
+                            _isDisabled = false;
+                            // });
+                            return gridList(snapshot.data.data.foods);
+                            break;
+                          case Status.ERROR:
+                            print(snapshot.data.message);
+                            print("asdfsdf");
+                            // return Center(child: Text("Periksa kembali jaringan anda"));
+                            return Container();
+                            break;
+                        }
+                      }
+                      return Container();
+                    }),
+              ),
+              RaisedButton(
+                elevation: 5.0,
+                color: AppColor.pinkHard,
+                textColor: Colors.white,
+                disabledColor: Colors.grey,
+                disabledTextColor: Colors.black,
+                padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+                splashColor: Colors.blueAccent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(30.0)),
+                onPressed: _onPressed,
+                child: Text(
+                  "Simpan",
+                  style: TextStyle(fontSize: 14.0),
+                ),
+              ),
             ],
           ),
         ),
@@ -33,8 +124,17 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
     );
   }
 
+  loadList() {
+    itemList = List();
+    selectedList = List();
+
+    List.generate(20, (index) {
+      itemList.add(Item("assets/images/frame-ilustrasi1.png", index + 1));
+    });
+  }
+
   String _foodTime;
-  int _selectedIndex;
+
   List<IconData> _icons = [
     FontAwesomeIcons.sadTear,
     FontAwesomeIcons.meh,
@@ -51,6 +151,8 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
             onTap: () {
               setState(() {
                 _selectedIndex = index;
+                print(_selectedIndex.toString());
+                _bloc.postWater(_selectedIndex + 1, "");
               });
             },
             child: Container(
@@ -144,7 +246,7 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
                             fontSize: 10.0)),
                     SizedBox(height: 10.0),
                     RaisedButton(
-                      elevation: 10.0,
+                      elevation: 5.0,
                       color: AppColor.pinkHard,
                       textColor: Colors.white,
                       disabledColor: Colors.grey,
@@ -184,6 +286,7 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(20))),
                       child: TextField(
+                        controller: textEdit,
                         decoration: InputDecoration(
                             icon: Icon(
                               Icons.search,
@@ -192,7 +295,8 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
                             border: InputBorder.none,
                             hintText: 'Cari Makanan...'),
                       ),
-                    )
+                    ),
+                    // gridList()
                   ],
                 ),
               ),
@@ -201,6 +305,45 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
         ),
       ),
     ]);
+  }
+
+  Widget gridList1() {
+    return GridView.count(
+      crossAxisCount: 3,
+      children: List.generate(20, (index) {
+        return Center(
+          child: Text(
+            'Item $index',
+            style: Theme.of(context).textTheme.headline5,
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget gridList(List<Foods> data) {
+    return GridView.builder(
+        itemCount: data.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            childAspectRatio: 1,
+            crossAxisSpacing: 20.0,
+            mainAxisSpacing: 2),
+        itemBuilder: (context, index) {
+          return GridItem(
+              item: data[index],
+              isSelected: (bool value) {
+                setState(() {
+                  if (value) {
+                    selectedList.add(itemList[index]);
+                  } else {
+                    selectedList.remove(itemList[index]);
+                  }
+                });
+                print("$index : $value");
+              },
+              key: Key(itemList[index].rank.toString()));
+        });
   }
 
   void foodTime() {
@@ -305,5 +448,130 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
             ),
           );
         });
+  }
+
+  void datePickerDialog() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)), //this right here
+            child: Container(
+              height: 300.0,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                      'Atur Waktu',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
+                    ),
+                    SizedBox(height: 20.0),
+//            hourMinute12H(),
+                    hourMinute15Interval(),
+                    RaisedButton(
+                      elevation: 5.0,
+                      color: AppColor.pinkHard,
+                      textColor: Colors.white,
+                      disabledColor: Colors.grey,
+                      disabledTextColor: Colors.black,
+                      padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+                      splashColor: Colors.blueAccent,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(30.0)),
+                      onPressed: () {},
+                      child: Text(
+                        "Atur",
+                        style: TextStyle(fontSize: 14.0),
+                      ),
+                    ),
+//            hourMinuteSecond(),
+//            hourMinute12HCustomStyle(),
+                    // new Container(
+                    //   margin: EdgeInsets.symmetric(vertical: 50),
+                    //   child: new Text(
+                    //     _dateTime.hour.toString().padLeft(2, '0') +
+                    //         ':' +
+                    //         _dateTime.minute.toString().padLeft(2, '0') +
+                    //         ':' +
+                    //         _dateTime.second.toString().padLeft(2, '0'),
+                    //     style: TextStyle(
+                    //         fontSize: 24, fontWeight: FontWeight.bold),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget hourMinute15Interval() {
+    return Card(
+      elevation: 2.0,
+      child: TimePickerSpinner(
+        spacing: 30,
+        minutesInterval: 5,
+        onTimeChange: (time) {
+          setState(() {
+            _dateTime = time;
+          });
+        },
+      ),
+    );
+  }
+}
+
+class GridItem extends StatefulWidget {
+  final Key key;
+  final Foods item;
+  final ValueChanged<bool> isSelected;
+
+  GridItem({this.item, this.isSelected, this.key});
+
+  @override
+  _GridItemState createState() => _GridItemState();
+}
+
+class _GridItemState extends State<GridItem> {
+  bool isSelected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          isSelected = !isSelected;
+          widget.isSelected(isSelected);
+        });
+      },
+      child: Stack(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(25.0),
+            child: Image.network(
+              widget.item.photoUrl,
+              color: Colors.pink.withOpacity(isSelected ? 0.4 : 0),
+              colorBlendMode: BlendMode.color,
+            ),
+          ),
+          isSelected
+              ? Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Colors.blue,
+                    ),
+                  ),
+                )
+              : Container()
+        ],
+      ),
+    );
   }
 }

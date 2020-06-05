@@ -1,12 +1,9 @@
 import 'dart:ui';
 
 import 'package:fit_app/core/res/app_color.dart';
-import 'package:fit_app/core/tools/injector.dart';
-import 'package:fit_app/models/general_post.dart';
 import 'package:fit_app/models/today_water_consum.dart';
 import 'package:fit_app/network/Response.dart';
 import 'package:fit_app/view/profile/waterConsumtion/water_bloc.dart';
-import 'package:flat_icons_flutter/flat_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:native_color/native_color.dart';
@@ -33,7 +30,6 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _bloc.dispose();
   }
@@ -219,7 +215,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
   Widget addWater(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 280.0,
+      height: 260.0,
       child: Card(
         elevation: 0.0,
         shape: RoundedRectangleBorder(
@@ -229,7 +225,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
         child: Padding(
           padding: EdgeInsets.all(12.0),
           child: Center(
-            child: Column(
+            child: Wrap(
               children: <Widget>[
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -248,7 +244,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                           padding: EdgeInsets.all(4.0),
                           color: AppColor.secondaryColor,
                           child: Icon(
-                            FlatIcons.minus,
+                            Entypo.minus,
                             color: Colors.white,
                             size: 20.0,
                           ),
@@ -291,7 +287,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                           padding: EdgeInsets.all(4.0),
                           color: AppColor.secondaryColor,
                           child: Icon(
-                            FlatIcons.plus,
+                            Entypo.plus,
                             color: Colors.white,
                             size: 20.0,
                           ),

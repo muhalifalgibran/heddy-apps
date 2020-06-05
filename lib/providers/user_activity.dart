@@ -31,11 +31,11 @@ class UserActivityProvider {
     return null;
   }
 
-  Future<dynamic> fetchUserActivity2() async {
+  Future<dynamic> fetchUserActivity2(String token) async {
     var responseJson;
     try {
-      final response = await http.get(url + 'user-activities/get',
-          headers: {"api_token": "a73143c0f171c7eadd9bb2f7a86c27f2e99cfdcf"});
+      final response = await http
+          .get(url + 'user-activities/get', headers: {"api_token": token});
       print("res:" + response.statusCode.toString());
       responseJson = CustomException().response(response);
     } on SocketException {

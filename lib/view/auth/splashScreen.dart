@@ -11,6 +11,14 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  void saveData(FirebaseUser user) async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    _prefs.setString('email', user.email);
+    _prefs.setString('name', user.displayName);
+    _prefs.setString('uid', user.uid);
+    _prefs.setString('photoUrl', user.photoUrl);
+  }
+
   @override
   void initState() {
     FirebaseAuth.instance.currentUser().then((firebaseUser) {
@@ -25,7 +33,8 @@ class _SplashScreenState extends State<SplashScreen> {
         );
       } else {
         //signed in
-        print("assfczxc");
+        print("logged in");
+        saveData(firebaseUser);
         setupLocator(firebaseUser);
         // addStringToSF(firebaseUser);
         Navigator.of(context).push(
