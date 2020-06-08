@@ -1,6 +1,7 @@
 import 'package:fit_app/view/auth/signIn.dart';
 import 'package:fit_app/view/auth/splashScreen.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
+import 'package:fit_app/view/profile/new_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: SplashScreen(),
+      home: NewHomeScreen(),
       routes: <String, WidgetBuilder>{
         // Set routes for using the Navigator.
         '/home': (BuildContext context) => new HomeScreen(),

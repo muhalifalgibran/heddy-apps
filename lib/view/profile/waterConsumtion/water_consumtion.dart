@@ -167,7 +167,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                       direction: Axis.vertical,
                       children: <Widget>[
                         Image.asset(
-                          'assets/images/cup200.png',
+                          'assets/images/cup${history.qty}.png',
                         ),
                       ],
                     ),
@@ -195,7 +195,9 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                   icon: Icon(Icons.delete, color: AppColor.colorParagraphGrey),
                   onPressed: () {
                     print(history.id);
-                    _bloc.deleteWater(history.id);
+                    _bloc
+                        .deleteWater(history.id)
+                        .then((value) => {_bloc.fetchWater()});
                   })
             ],
           ),
@@ -215,7 +217,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
   Widget addWater(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 260.0,
+      height: 280.0,
       child: Card(
         elevation: 0.0,
         shape: RoundedRectangleBorder(
@@ -325,32 +327,6 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                     height: 12.0,
                   ),
                 ),
-                // StreamBuilder<Response<GeneralResponse>>(
-                //     stream: _bloc.postWaterStream,
-                //     builder: (context, snapshot) {
-                //       if (snapshot.hasData) {
-                //         switch (snapshot.data.status) {
-                //           case Status.LOADING:
-                //             print("sd0");
-                //             return BackdropFilter(
-                //                 filter: ImageFilter.blur(
-                //                   sigmaX: 5,
-                //                   sigmaY: 5,
-                //                 ),
-                //                 child:
-                //                     Center(child: CircularProgressIndicator()));
-                //             break;
-                //           case Status.SUCCESS:
-                //             return Text("ssad");
-                //             break;
-                //           case Status.ERROR:
-                //             print(snapshot.data.data.toString());
-                //             return Text(snapshot.data.message);
-                //             break;
-                //         }
-                //       }
-                //       return Text("");
-                //     }),
                 FlatButton(
                     color: HexColor('2D9CDB'),
                     textColor: Colors.white,
@@ -367,8 +343,9 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                           " size: " +
                           _size.toString());
                       Center(child: CircularProgressIndicator());
-
-                      _bloc.postWater(_cup, _size);
+                      _bloc
+                          .postWater(_cup, _size)
+                          .then((value) => {_bloc.fetchWater()});
                     },
                     child: Row(
                       children: <Widget>[
@@ -674,20 +651,22 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
       direction: Axis.vertical,
       children: <Widget>[
         Image.asset(
-          'assets/images/cup$select.png',
-          scale: 0.5,
+          'assets/images/icup$select.png',
+          scale: 1.1,
         ),
-        Row(
-          children: <Widget>[
-            SizedBox(
-              width: 8.0,
-            ),
-            Text(
-              '$select ml',
-              style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ],
+        Center(
+          child: Row(
+            children: <Widget>[
+              SizedBox(
+                width: 15.0,
+              ),
+              Text(
+                '$select ml',
+                style: TextStyle(fontSize: 12.0, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         )
       ],
     );

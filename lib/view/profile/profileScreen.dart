@@ -11,6 +11,7 @@ import 'package:fit_app/view/home/bloc.dart';
 import 'package:fit_app/view/home/fragment.dart';
 import 'package:fit_app/view/profile/blocProfile.dart';
 import 'package:fit_app/view/profile/foodComsumtion/food_consumtion.dart';
+import 'package:fit_app/view/profile/sleepTime/sleepScreen.dart';
 import 'package:fit_app/view/profile/waterConsumtion/water_consumtion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -166,9 +167,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             borderRadius: BorderRadius.circular(10.0),
           ),
           color: Colors.transparent,
-          child: Padding(
+          child: Container(
               padding: EdgeInsets.all(12.0),
               child: Row(
+                mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   CircleAvatar(
                     backgroundImage: NetworkImage("$photoUrl"),
@@ -200,14 +202,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   SizedBox(
-                    width: 120.0,
-                    height: 10,
+                    width: 50.0,
                   ),
                   GestureDetector(
                       onTap: () {
                         _showDialog();
                       },
-                      child: Icon(Entypo.logout))
+                      child: Icon(Entypo.logout)),
                 ],
               )),
         ));
@@ -577,52 +578,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget sleepCard() {
-    return SizedBox(
-      height: 90.0,
-      width: double.infinity,
-      child: Card(
-        elevation: 5.0,
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            children: <Widget>[
-              Align(
-                alignment: Alignment.topLeft,
-                child: Card(
-                    color: HexColor('d5a8ff'),
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        LineIcons.bed,
-                        size: 16.0,
-                        color: HexColor('8448bd'),
-                      ),
-                    )),
-              ),
-              SizedBox(width: 5.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                verticalDirection: VerticalDirection.down,
-                children: <Widget>[
-                  Text(
-                    "Total waktu tidur",
-                    textAlign: TextAlign.start,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Text(
-                    "Segelas air akan Anda konsentrasi \ndan tetap segar.",
-                    style:
-                        TextStyle(fontWeight: FontWeight.w400, fontSize: 12.0),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: 80.0,
-              ),
-            ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              return SleepScreen();
+            },
+          ),
+        );
+      },
+      child: SizedBox(
+        height: 90.0,
+        width: double.infinity,
+        child: Card(
+          elevation: 5.0,
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Card(
+                      color: HexColor('d5a8ff'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Icon(
+                          LineIcons.bed,
+                          size: 16.0,
+                          color: HexColor('8448bd'),
+                        ),
+                      )),
+                ),
+                SizedBox(width: 5.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  verticalDirection: VerticalDirection.down,
+                  children: <Widget>[
+                    Text(
+                      "Total waktu tidur",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 5.0,
+                    ),
+                    Text(
+                      "Segelas air akan Anda konsentrasi \ndan tetap segar.",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w400, fontSize: 12.0),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: 80.0,
+                ),
+              ],
+            ),
           ),
         ),
       ),

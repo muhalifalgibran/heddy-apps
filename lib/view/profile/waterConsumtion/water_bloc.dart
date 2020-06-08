@@ -39,7 +39,7 @@ class WaterBloc {
     }
   }
 
-  postWater(int qty, int size) async {
+  Future postWater(int qty, int size) async {
     postWaterSink.add(Response.loading("Sedang mengambil data..."));
     try {
       GeneralResponse user = await _repository.postDrinkWater(qty, size);
@@ -49,7 +49,7 @@ class WaterBloc {
     }
   }
 
-  deleteWater(int id) async {
+  Future deleteWater(int id) async {
     // waterDataSink.add(Response.loading("Sedang mengambil data..."));
     try {
       WaterConsumeToday userAct = await _repository.deleteMineralWater(id);

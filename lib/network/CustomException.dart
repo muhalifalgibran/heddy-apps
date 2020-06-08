@@ -17,6 +17,11 @@ class CustomException implements Exception {
       case 200:
         var responseJson = json.decode(response.toString());
         return responseJson;
+        break;
+      case 201:
+        var responseJson = json.decode(response.toString());
+        return responseJson;
+        break;
       case 400:
         throw BadRequestException(response.toString());
       case 401:
@@ -37,6 +42,10 @@ class CustomException implements Exception {
       case 200:
         var responseJson = json.decode(response.body.toString());
         return responseJson;
+      case 201:
+        var responseJson = json.decode(response.toString());
+        return responseJson;
+        break;
       case 400:
         throw BadRequestException(response.body.toString());
       case 401:

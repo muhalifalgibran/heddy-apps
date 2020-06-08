@@ -8,6 +8,7 @@ class AppColor {
   static Color secondaryColor = HexColor('2D9CDB');
   static Color blueCyan = HexColor('36DEED');
   static Color blueHard = HexColor('4F6DF5');
+  static Color blueHard2 = HexColor('0E2BAE');
   static Color blueGrey = HexColor('F6F9FB');
   static Color profileBgColor = HexColor('B4B4B4');
   static Color pinkHard = HexColor('F54F8C');
@@ -16,6 +17,8 @@ class AppColor {
   static Color blueSoft = HexColor('D4DBFC');
   static Color pinkSoft = HexColor('FCD4E3');
   static Color yellowSoft = HexColor('FFEBC1');
+  static Color bgSleep = HexColor('283761');
+  static Color bgWakeUp = HexColor('FFFFFF');
 
   //font
   static Color primaryColorFont = HexColor('333333');

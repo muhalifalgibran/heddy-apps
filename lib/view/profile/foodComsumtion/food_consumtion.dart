@@ -1,6 +1,7 @@
 import 'package:fit_app/core/res/app_color.dart';
 import 'package:fit_app/models/food_consumtion.dart';
 import 'package:fit_app/network/Response.dart';
+import 'package:fit_app/view/profile/foodComsumtion/foodHistory/food_history_screen.dart';
 import 'package:fit_app/view/profile/foodComsumtion/food_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
@@ -22,6 +23,9 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
   List<Item> itemList;
   List<Item> selectedList;
   bool _isDisabled = true;
+  List<Foods> _localData;
+  String _time;
+  List<int> _selectedLocalData = List();
   var _onPressed;
   DateTime _dateTime = DateTime.now();
   final textEdit = TextEditingController();
@@ -31,7 +35,7 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
 
   @override
   void initState() {
-    loadList();
+    // loadList();
     super.initState();
     _bloc = FoodBloc();
     textEdit.addListener(_printLatestValue);
@@ -56,6 +60,8 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
     if (!_isDisabled) {
       _onPressed = () {
         print("tap");
+        print(_selectedLocalData.toString());
+        print(_bloc.foodChoosenStream.toString());
         datePickerDialog();
       };
     }
@@ -64,10 +70,30 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
         title: Text("Konsumsi Makan"),
         backgroundColor: AppColor.secondaryColor,
         elevation: 0.0,
-        actions: <Widget>[],
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.history),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return FoodHistoryScreen();
+                  },
+                ),
+              );
+            },
+          )
+        ],
       ),
       body: RefreshIndicator(
-        onRefresh: () {},
+        onRefresh: () {
+          setState(() {
+            _selectedIndex = _selectedIndex == null ? 1 : _selectedIndex;
+            // _selectedLocalData = null;
+            _bloc.foodEventSink.add(ResetFood());
+          });
+          return _bloc.postWater(_selectedIndex, "");
+        },
         child: Container(
           padding: EdgeInsets.all(12.0),
           child: ListView(
@@ -75,7 +101,7 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
               topCard(),
               SizedBox(height: 16.0),
               SizedBox(
-                height: 240,
+                height: 220,
                 child: StreamBuilder<Response<FoodConsumtionModel>>(
                     stream: _bloc.foodDataStream,
                     builder: (context, snapshot) {
@@ -100,6 +126,28 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
                       }
                       return Container();
                     }),
+              ),
+              Center(
+                child: StreamBuilder<List<Foods>>(
+                  stream: _bloc.foodChoosenStream,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Foods>> snapshot) {
+                    if (snapshot.data != null) {
+                      snapshot.data.map((e) => _selectedLocalData.add(e.id));
+                      if (snapshot.data == null) {
+                        return Container(
+                          child: Text(""),
+                        );
+                      } else {
+                        return Container(
+                            child: Text(
+                                snapshot.data.map((e) => e.name).toString()));
+                      }
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
               ),
               RaisedButton(
                 elevation: 5.0,
@@ -261,7 +309,7 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
                       },
                       child: Text(
                         _foodTime == null
-                            ? "Pilih menu makanmu  >"
+                            ? "Pilih waktu makanmu  >"
                             : "Waktu makan $_foodTime",
                         style: TextStyle(fontSize: 14.0),
                       ),
@@ -335,14 +383,16 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
               isSelected: (bool value) {
                 setState(() {
                   if (value) {
-                    selectedList.add(itemList[index]);
+                    _selectedLocalData.add(data[index].id);
+                    _bloc.foodEventSink.add(AddFood(data[index]));
                   } else {
-                    selectedList.remove(itemList[index]);
+                    _bloc.foodEventSink.add(RemoveFood(data[index]));
+                    _selectedLocalData.remove(data[index].id);
                   }
                 });
                 print("$index : $value");
               },
-              key: Key(itemList[index].rank.toString()));
+              key: Key(data[index].id.toString()));
         });
   }
 
@@ -469,7 +519,6 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
                           fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     SizedBox(height: 20.0),
-//            hourMinute12H(),
                     hourMinute15Interval(),
                     RaisedButton(
                       elevation: 5.0,
@@ -481,26 +530,24 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
                       splashColor: Colors.blueAccent,
                       shape: RoundedRectangleBorder(
                           borderRadius: new BorderRadius.circular(30.0)),
-                      onPressed: () {},
+                      onPressed: () {
+                        _time = _dateTime.hour.toString().padLeft(2, '0') +
+                            ':' +
+                            _dateTime.minute.toString().padLeft(2, '0');
+                        _bloc.foodEventSink.add(ResetFood());
+                        print(_selectedLocalData);
+                        _bloc.saveFood(_time, _selectedLocalData).then(
+                            (value) => {
+                                  _bloc.postWater(1, ""),
+                                  _selectedLocalData.clear()
+                                });
+                        Navigator.pop(context);
+                      },
                       child: Text(
                         "Atur",
                         style: TextStyle(fontSize: 14.0),
                       ),
                     ),
-//            hourMinuteSecond(),
-//            hourMinute12HCustomStyle(),
-                    // new Container(
-                    //   margin: EdgeInsets.symmetric(vertical: 50),
-                    //   child: new Text(
-                    //     _dateTime.hour.toString().padLeft(2, '0') +
-                    //         ':' +
-                    //         _dateTime.minute.toString().padLeft(2, '0') +
-                    //         ':' +
-                    //         _dateTime.second.toString().padLeft(2, '0'),
-                    //     style: TextStyle(
-                    //         fontSize: 24, fontWeight: FontWeight.bold),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -550,12 +597,17 @@ class _GridItemState extends State<GridItem> {
       },
       child: Stack(
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(25.0),
-            child: Image.network(
-              widget.item.photoUrl,
-              color: Colors.pink.withOpacity(isSelected ? 0.4 : 0),
-              colorBlendMode: BlendMode.color,
+          Container(
+            height: 100,
+            width: 100,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(25.0),
+              child: Image.network(
+                widget.item.photoUrl,
+                fit: BoxFit.cover,
+                color: Colors.pink.withOpacity(isSelected ? 0.4 : 0),
+                colorBlendMode: BlendMode.color,
+              ),
             ),
           ),
           isSelected
