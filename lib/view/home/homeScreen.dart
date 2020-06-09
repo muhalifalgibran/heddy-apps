@@ -3,6 +3,7 @@ import 'package:fit_app/view/bodycheck/bodyCheckScreen.dart';
 import 'package:fit_app/view/community/communityScreen.dart';
 import 'package:fit_app/view/home/bloc.dart';
 import 'package:fit_app/view/home/fragment.dart';
+import 'package:fit_app/view/profile/new_home_screen.dart';
 import 'package:fit_app/view/profile/profileScreen.dart';
 import 'package:fit_app/view/sporttracker/sportScreen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<BaseHomeFragment> fragments = <BaseHomeFragment>[
-    ProfileFragment(0),
+    NewHomeScreenFragment(0),
     BodyCheckFragment(1),
     SportTrackerFragment(2),
     CommunityFragment(3)

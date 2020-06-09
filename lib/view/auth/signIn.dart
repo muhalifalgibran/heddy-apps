@@ -41,6 +41,7 @@ class _SignInState extends State<SignIn> {
     _prefs.setString('name', user.displayName);
     _prefs.setString('uid', user.uid);
     _prefs.setString('photoUrl', user.photoUrl);
+    _prefs.setBool('isLoggedIn', true);
   }
 
   void saveToken(String token) async {

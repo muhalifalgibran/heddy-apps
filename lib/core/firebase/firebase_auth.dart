@@ -32,15 +32,10 @@ Future<FirebaseUser> getUserAccount() async {
 }
 
 Future<bool> isLoggedIn() async {
-  final FirebaseUser currentUser = await _auth.currentUser();
-  if (currentUser.uid.isNotEmpty) {
-    return true;
-  }
-  return false;
+  return await googleSignIn.isSignedIn();
 }
 
-void signOutGoogle() async {
+Future signOutGoogle() async {
   await googleSignIn.signOut();
-
   print("User Sign Out");
 }

@@ -22,10 +22,10 @@ class MyApp extends StatelessWidget {
           Theme.of(context).textTheme,
         ),
       ),
-      home: NewHomeScreen(),
+      home: SplashScreen(),
       routes: <String, WidgetBuilder>{
         // Set routes for using the Navigator.
-        '/home': (BuildContext context) => new HomeScreen(),
+        '/home': (BuildContext context) => new NewHomeScreen(),
         '/login': (BuildContext context) => new SignIn()
       },
     );
