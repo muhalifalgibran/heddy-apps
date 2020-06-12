@@ -3,7 +3,9 @@ import 'package:fit_app/models/food_history.dart';
 import 'package:fit_app/network/Response.dart';
 import 'package:fit_app/view/profile/foodComsumtion/foodHistory/food_history_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:fit_app/core/tools/constants.dart' as Constants;
 
 class FoodHistoryScreen extends StatefulWidget {
   @override
@@ -12,11 +14,20 @@ class FoodHistoryScreen extends StatefulWidget {
 
 class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
   final _bloc = FoodHistoryBloc();
+  final _url = Constants.API_URL;
 
   @override
   void initState() {
     super.initState();
     _bloc.getTodayHistory();
+    initializeDateFormatting('id', null);
+    Intl.defaultLocale = 'id';
+  }
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+    super.dispose();
   }
 
   @override
@@ -130,7 +141,15 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
   }
 
   Widget content(Malam items) {
-    String formattedDate = DateFormat('kk:mm').format(items.timestamp);
+    // var formattedDate = DateFormat('kk:mm').format(items.timestamp);
+    // var dateString = DateFormat.jm().format(items.timestamp);
+    var format = DateFormat.yMd('id');
+    var dateString = format.format(items.timestamp);
+    var formattedDate = DateFormat.jm().format(items.timestamp);
+    var today = new DateTime.now();
+    var formatedTanggal = items.timestamp.toUtc().toIso8601String();
+    var dateFormatted = DateFormat("HH:mm").format(items.timestamp.toUtc());
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
@@ -142,7 +161,7 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15.0),
                   child: Image.network(
-                    items.img,
+                    "$_url${items.img}",
                     fit: BoxFit.cover,
                   ),
                 )),
@@ -159,7 +178,7 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
         Spacer(),
         Row(
           children: <Widget>[
-            Text("$formattedDate"),
+            Text("$dateFormatted"),
             SizedBox(
               width: 60.0,
             ),

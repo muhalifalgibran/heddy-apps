@@ -1,3 +1,4 @@
+import 'package:fit_app/view/auth/registration/dialogs/registration.dart';
 import 'package:fit_app/view/auth/signIn.dart';
 import 'package:fit_app/view/auth/splashScreen.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
@@ -25,8 +26,9 @@ class MyApp extends StatelessWidget {
       home: SplashScreen(),
       routes: <String, WidgetBuilder>{
         // Set routes for using the Navigator.
-        '/home': (BuildContext context) => new NewHomeScreen(),
-        '/login': (BuildContext context) => new SignIn()
+        '/home': (BuildContext context) => new HomeScreen(),
+        '/login': (BuildContext context) => new SignIn(),
+        '/registration': (BuildContext context) => new RegistrationScreen(),
       },
     );
   }

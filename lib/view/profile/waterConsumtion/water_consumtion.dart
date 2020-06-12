@@ -52,12 +52,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                   if (snapshot.hasData) {
                     switch (snapshot.data.status) {
                       case Status.LOADING:
-                        return BackdropFilter(
-                            filter: ImageFilter.blur(
-                              sigmaX: 5,
-                              sigmaY: 5,
-                            ),
-                            child: Center(child: CircularProgressIndicator()));
+                        return Center(child: CircularProgressIndicator());
 
                         break;
                       case Status.SUCCESS:
@@ -71,7 +66,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                         break;
                     }
                   }
-                  return Text("Error Load");
+                  return Container();
                 },
               )),
         ));
@@ -675,6 +670,8 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
   Widget cardPedometer(BuildContext context, WaterConsumeToday data) {
     int _mines = data.data.max - data.data.sum;
     int _percent = ((data.data.sum / data.data.max) * 100).round();
+    // int _percent = 0.1
+
     double _water = _percent / 100;
     return Stack(alignment: Alignment.center, children: <Widget>[
       Container(

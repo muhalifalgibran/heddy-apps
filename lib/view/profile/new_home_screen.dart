@@ -2,11 +2,16 @@ import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:fit_app/core/firebase/firebase_auth.dart';
 import 'package:fit_app/core/res/app_color.dart';
 import 'package:fit_app/core/tools/constants.dart';
+import 'package:fit_app/models/dashboard.dart';
+import 'package:fit_app/network/Response.dart';
+import 'package:fit_app/view/auth/registration/dialogs/registration.dart';
 import 'package:fit_app/view/auth/signIn.dart';
 import 'package:fit_app/view/home/bloc.dart';
 import 'package:fit_app/view/home/fragment.dart';
+import 'package:fit_app/view/profile/blocProfile.dart';
 import 'package:fit_app/view/profile/foodComsumtion/food_consumtion.dart';
 import 'package:fit_app/view/profile/sleepTime/sleepScreen.dart';
+import 'package:fit_app/view/profile/sportTracker/sport_tracker.dart';
 import 'package:fit_app/view/profile/waterConsumtion/water_consumtion.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,6 +22,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class NewHomeScreenFragment implements BaseHomeFragment {
@@ -48,12 +54,38 @@ class NewHomeScreen extends StatefulWidget {
 
 class _NewHomeScreenState extends State<NewHomeScreen> {
   var _calendarController;
+  String photoUrl;
+  String name = "Selamat datang di Heddy";
+  String email;
+  int isComplete;
+  final _bloc = ProfileBloc();
   @override
   void initState() {
-    super.initState();
+    setState(() {
+      getNama().then((value) {
+        name = value.getString('name');
+        email = value.getString('email');
+        photoUrl = value.getString('photoUrl');
+        isComplete = value.getInt('isComplete');
+        if (isComplete == 0) {
+          print("as");
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+            builder: (context) {
+              return RegistrationScreen();
+            },
+          ), ModalRoute.withName('/registration'));
+        }
+      });
+    });
+    _bloc.getDashboard();
+
+    print(isComplete.toString());
+    print(token.toString());
+
     _calendarController = CalendarController();
     initializeDateFormatting('id', null);
     Intl.defaultLocale = 'id';
+    super.initState();
   }
 
   @override
@@ -74,46 +106,78 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     }
   }
 
+  Future<SharedPreferences> getNama() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    return pref;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-          body: Stack(
-        children: <Widget>[
-          background(),
-          Positioned(
-            child: AppBar(
-              leading: null,
-              title: Text("HEDDY.ID"),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              actions: <Widget>[
-                PopupMenuButton<String>(
-                  onSelected: choiceAction,
-                  itemBuilder: (BuildContext context) {
-                    return MenuLogout.pilihan.map((String e) {
-                      return PopupMenuItem<String>(
-                        value: e,
-                        child: Text(e),
-                      );
-                    }).toList();
-                  },
-                )
-              ],
-            ),
+        child: Scaffold(
+      body: RefreshIndicator(
+          onRefresh: () => _bloc.getDashboard(),
+          child: StreamBuilder<Response<Dashboard>>(
+            stream: _bloc.dashboardDatasStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                switch (snapshot.data.status) {
+                  case Status.LOADING:
+                    return Center(child: CircularProgressIndicator());
+                    break;
+                  case Status.SUCCESS:
+                    print("success");
+                    return body(context, snapshot.data.data);
+                    break;
+                  case Status.ERROR:
+                    print("error");
+                    print(snapshot.data.data.toString());
+                    return Text(snapshot.data.message);
+                    break;
+                }
+              }
+              return Container();
+            },
+          )),
+    ));
+  }
+
+  Widget body(BuildContext context, Dashboard data) {
+    return Stack(
+      children: <Widget>[
+        background(),
+        Positioned(
+          child: AppBar(
+            leading: null,
+            title: Text("HEDDY.ID"),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            actions: <Widget>[
+              PopupMenuButton<String>(
+                onSelected: choiceAction,
+                itemBuilder: (BuildContext context) {
+                  return MenuLogout.pilihan.map((String e) {
+                    return PopupMenuItem<String>(
+                      value: e,
+                      child: Text(e),
+                    );
+                  }).toList();
+                },
+              )
+            ],
           ),
-          content()
-        ],
-      )),
+        ),
+        content(data)
+      ],
     );
   }
 
-  Widget content() {
+  Widget content(Dashboard data) {
     return Container(
       padding: EdgeInsets.only(left: 12.0, right: 12.0, top: 60.0),
       child: ListView(
         children: <Widget>[
-          nameCard(),
+          nameCard(data),
           TableCalendar(
             locale: Intl.defaultLocale,
             initialCalendarFormat: CalendarFormat.week,
@@ -132,13 +196,16 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
           SizedBox(
             height: 10.0,
           ),
-          healthCondition()
+          healthCondition(data.data)
         ],
       ),
     );
   }
 
-  Widget healthCondition() {
+  Widget healthCondition(Data data) {
+    int _percent = ((data.mineral.sum / data.mineral.max) * 100).round();
+    double _water = _percent / 100;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -210,12 +277,12 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                         Center(
                           child: CircularPercentIndicator(
                             radius: 80.0,
-                            percent: 0.87,
+                            percent: _water,
                             progressColor: AppColor.blueHard2,
                             animationDuration: 1000,
                             lineWidth: 10.0,
                             center: Text(
-                              "87%",
+                              "$_percent%",
                               style: TextStyle(
                                 fontSize: 16.0,
                                 color: Colors.white,
@@ -227,7 +294,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                         Spacer(),
                         RichText(
                           text: TextSpan(
-                            text: '750 ',
+                            text: '${data.mineral.sum} ',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24.0,
@@ -239,7 +306,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                           ),
                         ),
                         Text(
-                          "Target 800ml",
+                          "Target ${data.mineral.max}ml",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.white),
                         ),
@@ -304,7 +371,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                         Spacer(),
                         RichText(
                           text: TextSpan(
-                            text: '6 ',
+                            text: '${data.sleepDuration.hours} ',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 24.0,
@@ -314,7 +381,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                                   text: ' h ',
                                   style: TextStyle(fontSize: 12.0)),
                               TextSpan(
-                                text: '43 ',
+                                text: '${data.sleepDuration.minutes} ',
                               ),
                               TextSpan(
                                   text: 'min',
@@ -388,7 +455,14 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                           height: 30.0,
                           child: Row(
                             children: <Widget>[
-                              Checkbox(value: true, onChanged: null),
+                              Checkbox(
+                                  value: (() {
+                                    if (data.food.pagi == 1)
+                                      return true;
+                                    else
+                                      return false;
+                                  }()),
+                                  onChanged: null),
                               Text(
                                 "Makan Pagi",
                                 style: TextStyle(
@@ -403,7 +477,14 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                           height: 30.0,
                           child: Row(
                             children: <Widget>[
-                              Checkbox(value: false, onChanged: null),
+                              Checkbox(
+                                  value: (() {
+                                    if (data.food.siang == 1)
+                                      return true;
+                                    else
+                                      return false;
+                                  }()),
+                                  onChanged: null),
                               Text(
                                 "Makan Siang",
                                 style: TextStyle(
@@ -418,7 +499,14 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                           height: 30.0,
                           child: Row(
                             children: <Widget>[
-                              Checkbox(value: true, onChanged: null),
+                              Checkbox(
+                                  value: (() {
+                                    if (data.food.malam == 1)
+                                      return true;
+                                    else
+                                      return false;
+                                  }()),
+                                  onChanged: null),
                               Text(
                                 "Makan Malam",
                                 style: TextStyle(
@@ -447,59 +535,67 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
               ),
             ),
             //olahraga
-            Container(
-              padding: EdgeInsets.all(8.0),
-              height: 210.0,
-              width: 190.0,
-              child: Card(
-                color: AppColor.yellowHard,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Container(
-                              padding: EdgeInsets.all(4.0),
-                              color: Colors.white,
-                              child: Icon(
-                                FontAwesome.fire,
-                                color: AppColor.yellowHard,
-                                size: 10.0,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SportTrackerScreen()));
+              },
+              child: Container(
+                padding: EdgeInsets.all(8.0),
+                height: 210.0,
+                width: 190.0,
+                child: Card(
+                  color: AppColor.yellowHard,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: Container(
+                                padding: EdgeInsets.all(4.0),
+                                color: Colors.white,
+                                child: Icon(
+                                  FontAwesome.fire,
+                                  color: AppColor.yellowHard,
+                                  size: 10.0,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                          Text(
-                            "Olahraga",
+                            SizedBox(
+                              width: 10.0,
+                            ),
+                            Text(
+                              "Olahraga",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 10.0),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Center(child: Image.asset("assets/images/step-1.png")),
+                        Spacer(),
+                        Text('Jalan Santai ',
                             style: TextStyle(
                                 color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 10.0),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Center(child: Image.asset("assets/images/step-1.png")),
-                      Spacer(),
-                      Text('Jalan Santai ',
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.bold)),
+                        Text(
+                          "06:00 - 06:30",
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.bold)),
-                      Text(
-                        "06:00 - 06:30",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                    ],
+                              fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -510,21 +606,24 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     );
   }
 
-  Widget nameCard() {
+  Widget nameCard(Dashboard data) {
     return Column(
       children: <Widget>[
         Row(
           children: <Widget>[
-            CircleAvatar(
-              backgroundColor: Colors.grey,
-              radius: 30.0,
+            Container(
+              height: 60.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.0),
+                // child: Image.network(photoUrl),
+              ),
             ),
             SizedBox(width: 10.0),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  "Halo Lorem,",
+                  "Halo $name,",
                   style: TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
@@ -551,7 +650,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
           height: 20.0,
         ),
         Container(
-          height: 190.0,
+          height: 160.0,
           child: Card(
             elevation: 1.0,
             shape: RoundedRectangleBorder(
@@ -565,7 +664,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      score(),
+                      score(data.data.score),
                       SizedBox(
                         width: 24.0,
                       ),
@@ -579,7 +678,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                             height: 10.0,
                           ),
                           Container(
-                            width: 230.0,
+                            width: 200.0,
                             child: Text(
                               "Berdasarkan hasil tes kesehatan keseluruhan kamu, nilai yang didapatkan termasuk kategori Baik. ",
                               overflow: TextOverflow.ellipsis,
@@ -593,7 +692,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                             height: 20.0,
                           ),
                           Text(
-                            "Sampai ketemu besok, Lorem!",
+                            "Sampai ketemu besok, $name!",
                             overflow: TextOverflow.ellipsis,
                             maxLines: 5,
                             style: TextStyle(
@@ -604,8 +703,8 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                       )
                     ],
                   ),
-                  Spacer(),
-                  Icon(Typicons.down_outline, color: AppColor.primaryColor)
+                  // Spacer(),
+                  // Icon(Typicons.down_outline, color: AppColor.primaryColor)
                 ],
               ),
             ),
@@ -615,32 +714,18 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     );
   }
 
-  Widget score() {
+  Widget score(int score) {
     return Card(
       color: AppColor.primaryColor,
-      shape: BeveledRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),
       ),
-      child: Card(
-        shape: BeveledRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        color: AppColor.blueGrey,
-        child: Card(
-          shape: BeveledRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          color: AppColor.primaryColor,
-          child: Padding(
-            padding: EdgeInsets.all(12.0),
-            child: Text(
-              "87",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 36.0,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
+      child: Padding(
+        padding: EdgeInsets.all(6.0),
+        child: Text(
+          "$score",
+          style: TextStyle(
+              color: Colors.white, fontSize: 36.0, fontWeight: FontWeight.bold),
         ),
       ),
     );

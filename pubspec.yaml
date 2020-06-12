@@ -3,13 +3,12 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.2.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.2
-  pedometer: ^1.0.0
   percent_indicator: ^2.1.1
   flutter_launcher_icons: ^0.7.5
   font_awesome_flutter: ^8.8.1
@@ -73,6 +72,9 @@ flutter:
     - assets/images/heart-1.png
     - assets/images/step-1.png
 
+    - assets/images/lk1.png
+    - assets/images/pr1.png
+
     # cup
     - assets/images/cup100.png
     - assets/images/cup150.png
@@ -88,3 +90,11 @@ flutter:
     - assets/images/icup300.png
     - assets/images/icup400.png
     - assets/images/icup600.png
+
+    - assets/images/basket.png
+    - assets/images/volley.png
+    - assets/images/cycling.png
+    - assets/images/jalan-santai.png
+    - assets/images/jogging.png
+    - assets/images/futsal.png
+    - assets/images/senam.png

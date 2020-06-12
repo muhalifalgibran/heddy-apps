@@ -106,5 +106,6 @@ class FoodBloc {
     _dataController?.close();
     _choosenEventFood?.close();
     _foodStateController?.close();
+    _saveFoodController?.close();
   }
 }

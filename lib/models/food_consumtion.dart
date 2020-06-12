@@ -4,9 +4,9 @@ class FoodConsumtionModel {
   FoodConsumtionModel({this.foods});
 
   FoodConsumtionModel.fromJson(Map<String, dynamic> json) {
-    if (json['foods'] != null) {
+    if (json['data'] != null) {
       foods = new List<Foods>();
-      json['foods'].forEach((v) {
+      json['data'].forEach((v) {
         foods.add(new Foods.fromJson(v));
       });
     }
@@ -15,7 +15,7 @@ class FoodConsumtionModel {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.foods != null) {
-      data['foods'] = this.foods.map((v) => v.toJson()).toList();
+      data['data'] = this.foods.map((v) => v.toJson()).toList();
     }
     return data;
   }

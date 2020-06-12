@@ -24,10 +24,10 @@ class GetToken {
   }
 }
 
-void setupLocator(FirebaseUser user) {
-  locator.registerSingleton<GetPreferences>(GetPreferences(user),
-      signalsReady: true);
-}
+// void setupLocator(FirebaseUser user) {
+//   locator.registerSingleton<GetPreferences>(GetPreferences(user),
+//       signalsReady: true);
+// }
 
 void setupLocatorToken(String token) {
   Constant.token = token;

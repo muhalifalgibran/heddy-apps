@@ -1,3 +1,4 @@
+import 'package:fit_app/models/dashboard.dart';
 import 'package:fit_app/models/user_activity.dart';
 import 'package:fit_app/providers/user_activity.dart';
 import 'dart:async';
@@ -15,5 +16,12 @@ class UserActivityRepository {
     print("hias: " + token);
     final response = await userProvider.fetchUserActivity2(token);
     return UserActivity.fromJson(response);
+  }
+
+  Future<Dashboard> getDashboard() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    token = pref.getString('token');
+    final response = await userProvider.getDashboard(token);
+    return Dashboard.fromJson(response);
   }
 }

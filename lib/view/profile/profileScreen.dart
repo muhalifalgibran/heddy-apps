@@ -50,7 +50,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  static GetPreferences userRef = locator<GetPreferences>();
   String photoUrl;
   String name;
   String email;

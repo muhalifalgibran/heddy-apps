@@ -44,4 +44,18 @@ class UserActivityProvider {
 
     return responseJson;
   }
+
+  Future<dynamic> getDashboard(String token) async {
+    var responseJson;
+    try {
+      final response = await http
+          .get(url + 'dashboard/get-today', headers: {"api_token": token});
+      print("res:" + response.statusCode.toString());
+      responseJson = CustomException().response(response);
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+
+    return responseJson;
+  }
 }

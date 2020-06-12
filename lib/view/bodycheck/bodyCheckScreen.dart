@@ -4,6 +4,8 @@ import 'package:fit_app/view/home/bloc.dart';
 import 'package:fit_app/view/home/fragment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttericon/font_awesome5_icons.dart';
+import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:line_icons/line_icons.dart';
 
 class BodyCheckFragment implements BaseHomeFragment {
@@ -11,8 +13,8 @@ class BodyCheckFragment implements BaseHomeFragment {
 
   @override
   BottomNavyBarItem bottomNavyBarItem = BottomNavyBarItem(
-    icon: Icon(LineIcons.heart),
-    title: Text('Body Check'),
+    icon: Icon(FontAwesome5.people_carry),
+    title: Text('Community'),
     activeColor: Colors.redAccent,
     inactiveColor: Colors.white,
   );
@@ -34,18 +36,7 @@ class BodyCheckScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[CheckBoxBC()],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        backgroundColor: Colors.red,
-        child: Icon(Icons.add, color: Colors.white),
-      ),
-      appBar: createAppBar(context),
-    );
+    return Scaffold(body: Container());
   }
 
   Widget createAppBar(BuildContext context) {
@@ -55,7 +46,7 @@ class BodyCheckScreen extends StatelessWidget {
       titleSpacing: 0,
       backgroundColor: Colors.blue,
       title: Text(
-        "Body Check",
+        "Community",
         style: TextStyle(color: Colors.white),
       ),
       leading: Icon(

@@ -3,8 +3,13 @@ import 'package:fit_app/core/firebase/firebase_auth.dart';
 import 'package:fit_app/core/res/app_color.dart';
 import 'package:fit_app/core/tools/injector.dart';
 import 'package:fit_app/models/first_auth.dart';
+import 'package:fit_app/models/general_post.dart';
+import 'package:fit_app/models/signin_response.dart';
 import 'package:fit_app/network/Response.dart';
 import 'package:fit_app/view/auth/auth_bloc.dart';
+import 'package:fit_app/view/auth/registration/dialogs/registration.dart';
+import 'package:fit_app/view/auth/registration/newSignUp.dart';
+import 'package:fit_app/view/auth/registration/signUp.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +24,10 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  var _bloc = AuthBloc();
+  AuthBloc _bloc;
+
+  final email = TextEditingController();
+  final password = TextEditingController();
 
   void loginState(bool loggedIn) {
     if (loggedIn) {
@@ -33,6 +41,15 @@ class _SignInState extends State<SignIn> {
   @override
   void initState() {
     super.initState();
+    _bloc = AuthBloc();
+  }
+
+  @override
+  void dispose() {
+    _bloc.dispose();
+    email.dispose();
+    password.dispose();
+    super.dispose();
   }
 
   void saveData(FirebaseUser user) async {
@@ -69,33 +86,47 @@ class _SignInState extends State<SignIn> {
               background(context),
               Align(
                   alignment: Alignment.bottomCenter,
-                  child: StreamBuilder<Response<FirstAuth>>(
-                      stream: _bloc.authDataStream,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          print("snapshot:" + snapshot.data.data.toString());
-                          switch (snapshot.data.status) {
-                            case Status.LOADING:
-                              print("l");
-                              return CircularProgressIndicator();
-                              break;
-                            case Status.SUCCESS:
-                              //TODO bikin case kalau profil lengkap dengan belum lengkap
-                              print("logged in 2");
-                              saveToken(snapshot.data.data.message.token);
-                              _bloc.dispose();
-                              break;
-                            case Status.ERROR:
-                              print("e" + snapshot.data.message);
-                              return fixBottomSheet(context);
-                              break;
-                          }
-                        } else {
-                          print("2");
-                        }
-                        return fixBottomSheet(context);
-                      })),
+                  child: fixBottomSheet(context)),
               Center(child: info()),
+              Positioned(
+                left: 0,
+                bottom: 1,
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => NewSignUp()));
+                  },
+                  child: Container(
+                    color: Colors.white,
+                    padding: EdgeInsets.all(12.0),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          height: 1,
+                          width: MediaQuery.of(context).size.width,
+                          color: AppColor.colorParagraphGrey,
+                        ),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            text: 'Tidak punya akun? ',
+                            style: TextStyle(color: AppColor.primaryColorFont),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: 'Buat Akun',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColor.primaryColor)),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
         ),
@@ -130,14 +161,45 @@ class _SignInState extends State<SignIn> {
           height: 70.0,
         ),
         Image.asset('assets/images/pesawat.png'),
+        StreamBuilder<Response<FirstAuth>>(
+            stream: _bloc.authDataStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                print("snapshot:" + snapshot.data.data.toString());
+                switch (snapshot.data.status) {
+                  case Status.LOADING:
+                    print("l");
+                    return CircularProgressIndicator();
+                    break;
+                  case Status.SUCCESS:
+                    saveToken(snapshot.data.data.message.token);
+                    navigateToPage(context, snapshot.data.data.message.code);
+                    break;
+                  case Status.ERROR:
+                    print("e" + snapshot.data.message);
+                    return fixBottomSheet(context);
+                    break;
+                }
+              }
+              return Container();
+            }),
       ],
     );
+  }
+
+  Future navigateToPage(BuildContext context, int code) async {
+    if (code == 1) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      Navigator.pushNamed(context, '/registration');
+    }
   }
 
   Widget fixBottomSheet(context) {
     return Container(
         width: MediaQuery.of(context).size.width,
         height: 520.0,
+        padding: EdgeInsets.only(bottom: 12.0),
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -218,8 +280,6 @@ class _SignInState extends State<SignIn> {
                               saveData(user),
                               _bloc.fetchFirstAuth(user.uid, user.displayName,
                                   user.email, user.photoUrl),
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                  '/home', (Route<dynamic> route) => false)
                             });
                       },
                       child: Row(
@@ -270,6 +330,48 @@ class _SignInState extends State<SignIn> {
                     SizedBox(
                       height: 20.0,
                     ),
+                    StreamBuilder<Response<SignInResponse>>(
+                        stream: _bloc.signUpDataStream,
+                        builder: (context,
+                            AsyncSnapshot<Response<SignInResponse>> snapshot) {
+                          if (snapshot.hasData) {
+                            switch (snapshot.data.status) {
+                              case Status.LOADING:
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                                break;
+                              case Status.SUCCESS:
+                                if (!snapshot.data.data.success) {
+                                  return Center(
+                                      child: Text(
+                                    snapshot.data.data.message.toString(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18.0),
+                                  ));
+                                } else {
+                                  saveToken(snapshot.data.data.message.token);
+                                  navigateToPage(
+                                      context, snapshot.data.data.message.code);
+                                }
+                                break;
+                              case Status.ERROR:
+                                return Center(
+                                    child: Text(
+                                  "Periksa kembali masukan anda",
+                                  style: TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18.0),
+                                ));
+                                break;
+                            }
+                          }
+                          return Container();
+                        }),
                     form()
                   ],
                 )
@@ -291,11 +393,13 @@ class _SignInState extends State<SignIn> {
     return Column(
       children: <Widget>[
         TextFormField(
+          controller: email,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
               labelText: 'Email', hintText: "asdfghjk@aaaa.com"),
         ),
         TextFormField(
+          controller: password,
           obscureText: _obscureText,
           keyboardType: TextInputType.visiblePassword,
           decoration: InputDecoration(
@@ -321,9 +425,7 @@ class _SignInState extends State<SignIn> {
           shape: RoundedRectangleBorder(
               borderRadius: new BorderRadius.circular(30.0)),
           onPressed: () {
-            /*...*/
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            _bloc.signIn(email.text, password.text);
           },
           child: Row(
             children: <Widget>[

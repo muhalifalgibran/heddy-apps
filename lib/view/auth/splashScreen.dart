@@ -22,35 +22,48 @@ class _SplashScreenState extends State<SplashScreen> {
     _prefs.setString('photoUrl', user.photoUrl);
   }
 
+  getToken() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    return _prefs.getString('token');
+  }
+
   @override
   void initState() {
     super.initState();
-    isLoggedIn().then((value) {
-      if (!value) {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return FlashScreen();
-            },
-          ),
-        );
-      } else {
-        FirebaseAuth.instance.currentUser().then((firebaseUser) {
-          //signed in
-          print("logged in");
-          saveData(firebaseUser);
-          setupLocator(firebaseUser);
-          // addStringToSF(firebaseUser);
+    if (getToken() != null) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            return HomeScreen();
+          },
+        ),
+      );
+    } else {
+      isLoggedIn().then((value) {
+        if (!value) {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return HomeScreen();
+                return FlashScreen();
               },
             ),
           );
-        });
-      }
-    });
+        } else {
+          FirebaseAuth.instance.currentUser().then((firebaseUser) {
+            //signed in
+            print("logged in");
+            saveData(firebaseUser);
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) {
+                  return HomeScreen();
+                },
+              ),
+            );
+          });
+        }
+      });
+    }
     FirebaseAuth.instance.currentUser().then((firebaseUser) {
       if (firebaseUser.uid.isEmpty) {
         //signed out
@@ -65,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen> {
         //signed in
         print("logged in");
         saveData(firebaseUser);
-        setupLocator(firebaseUser);
+        // setupLocator(firebaseUser);
         // addStringToSF(firebaseUser);
         Navigator.of(context).push(
           MaterialPageRoute(

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:fluttericon/linecons_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:fit_app/core/tools/constants.dart' as Constants;
 
 class FoodConsumtion extends StatefulWidget {
   @override
@@ -375,7 +376,7 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             childAspectRatio: 1,
-            crossAxisSpacing: 20.0,
+            crossAxisSpacing: 10.0,
             mainAxisSpacing: 2),
         itemBuilder: (context, index) {
           return GridItem(
@@ -585,6 +586,7 @@ class GridItem extends StatefulWidget {
 
 class _GridItemState extends State<GridItem> {
   bool isSelected = false;
+  final url = Constants.API_URL;
 
   @override
   Widget build(BuildContext context) {
@@ -601,9 +603,9 @@ class _GridItemState extends State<GridItem> {
             height: 100,
             width: 100,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(25.0),
+              borderRadius: BorderRadius.circular(10.0),
               child: Image.network(
-                widget.item.photoUrl,
+                "$url${widget.item.photoUrl}",
                 fit: BoxFit.cover,
                 color: Colors.pink.withOpacity(isSelected ? 0.4 : 0),
                 colorBlendMode: BlendMode.color,
