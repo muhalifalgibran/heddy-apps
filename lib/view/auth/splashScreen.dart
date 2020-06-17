@@ -13,7 +13,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool _isLoggedIn = false;
   void saveData(FirebaseUser user) async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     _prefs.setString('email', user.email);
@@ -22,15 +21,24 @@ class _SplashScreenState extends State<SplashScreen> {
     _prefs.setString('photoUrl', user.photoUrl);
   }
 
-  getToken() async {
+  String token;
+
+  Future getToken() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
-    return _prefs.getString('token');
+    token = _prefs.getString('token');
   }
 
   @override
   void initState() {
     super.initState();
-    if (getToken() != null) {
+    checkLog();
+  }
+
+  Future checkLog() async {
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+    token = _prefs.getString('token');
+    print("tokennya: " + token);
+    if (token != null) {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
@@ -64,31 +72,6 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       });
     }
-    FirebaseAuth.instance.currentUser().then((firebaseUser) {
-      if (firebaseUser.uid.isEmpty) {
-        //signed out
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return FlashScreen();
-            },
-          ),
-        );
-      } else {
-        //signed in
-        print("logged in");
-        saveData(firebaseUser);
-        // setupLocator(firebaseUser);
-        // addStringToSF(firebaseUser);
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              return HomeScreen();
-            },
-          ),
-        );
-      }
-    });
   }
 
   @override

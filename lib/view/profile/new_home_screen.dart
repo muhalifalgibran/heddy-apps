@@ -58,12 +58,16 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
   String name = "Selamat datang di Heddy";
   String email;
   int isComplete;
+  DateTime now = DateTime.now();
+  String currentTime;
+
   final _bloc = ProfileBloc();
   @override
   void initState() {
+    currentTime = DateFormat('yyyy-MM-dd').format(now);
+
     setState(() {
       getNama().then((value) {
-        name = value.getString('name');
         email = value.getString('email');
         photoUrl = value.getString('photoUrl');
         isComplete = value.getInt('isComplete');
@@ -77,7 +81,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
         }
       });
     });
-    _bloc.getDashboard();
+    _bloc.getDashboard(currentTime);
 
     print(isComplete.toString());
     print(token.toString());
@@ -85,6 +89,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     _calendarController = CalendarController();
     initializeDateFormatting('id', null);
     Intl.defaultLocale = 'id';
+
     super.initState();
   }
 
@@ -113,10 +118,12 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String today = DateFormat("yyyy-MM-dd").format(now);
+
     return SafeArea(
         child: Scaffold(
       body: RefreshIndicator(
-          onRefresh: () => _bloc.getDashboard(),
+          onRefresh: () => _bloc.getDashboard(currentTime),
           child: StreamBuilder<Response<Dashboard>>(
             stream: _bloc.dashboardDatasStream,
             builder: (context, snapshot) {
@@ -127,12 +134,17 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                     break;
                   case Status.SUCCESS:
                     print("success");
+                    name = snapshot.data.data.data.name.toString();
+
                     return body(context, snapshot.data.data);
                     break;
                   case Status.ERROR:
                     print("error");
                     print(snapshot.data.data.toString());
-                    return Text(snapshot.data.message);
+                    return Error(
+                      errorMessage: "Kamu tidak beraktifitas pada hari itu",
+                      onRetryPressed: () => _bloc.getDashboard(today),
+                    );
                     break;
                 }
               }
@@ -190,7 +202,9 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
             ),
             onDaySelected: (date, events) {
               // _onDaySelected(date, events);
-              print(date.toString());
+              print(DateFormat("yyyy-MM-dd").format(date));
+              currentTime = DateFormat("yyyy-MM-dd").format(date);
+              _bloc.getDashboard(currentTime);
             },
           ),
           SizedBox(
@@ -206,6 +220,9 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     int _percent = ((data.mineral.sum / data.mineral.max) * 100).round();
     double _water = _percent / 100;
 
+    String durration = data.activity.startActivity != null
+        ? data.activity.startActivity + "-" + data.activity.endActivity
+        : "";
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -231,8 +248,10 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
             //air mineral
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => WaterConsumtion()));
+                Navigator.of(context).pushNamed('/water');
+
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => WaterConsumtion()));
               },
               child: Container(
                 padding: EdgeInsets.all(8.0),
@@ -319,13 +338,14 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
             // waktu tidur
             GestureDetector(
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return SleepScreen();
-                    },
-                  ),
-                );
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (context) {
+                //       return SleepScreen();
+                //     },
+                //   ),
+                // );
+                Navigator.of(context).pushNamed('/sleep');
               },
               child: Container(
                 padding: EdgeInsets.all(8.0),
@@ -408,8 +428,9 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
             //konsumsi makan
             GestureDetector(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => FoodConsumtion()));
+                // Navigator.push(context,
+                //     MaterialPageRoute(builder: (context) => FoodConsumtion()));
+                Navigator.of(context).pushNamed('/food');
               },
               child: Container(
                 padding: EdgeInsets.all(8.0),
@@ -537,10 +558,11 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
             //olahraga
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SportTrackerScreen()));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => SportTrackerScreen()));
+                Navigator.of(context).pushNamed('/sport');
               },
               child: Container(
                 padding: EdgeInsets.all(8.0),
@@ -584,13 +606,16 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                         ),
                         Center(child: Image.asset("assets/images/step-1.png")),
                         Spacer(),
-                        Text('Jalan Santai ',
+                        Text(
+                            data.activity.name != null
+                                ? data.activity.name
+                                : "Belum berolahraga",
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.bold)),
                         Text(
-                          "06:00 - 06:30",
+                          durration,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, color: Colors.white),
                         ),
@@ -763,4 +788,44 @@ class ClippingClass extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}
+
+class Error extends StatelessWidget {
+  final String errorMessage;
+
+  final Function onRetryPressed;
+
+  const Error({Key key, this.errorMessage, this.onRetryPressed})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Text(
+            errorMessage,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.red, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          SizedBox(height: 8),
+          RaisedButton(
+            color: AppColor.primaryColor,
+            textColor: Colors.white,
+            disabledColor: Colors.grey,
+            disabledTextColor: Colors.black,
+            padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+            splashColor: Colors.blueAccent,
+            shape: RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0)),
+            child: Text('Kembali ke hari ini',
+                style: TextStyle(color: Colors.white)),
+            onPressed: onRetryPressed,
+          )
+        ],
+      ),
+    );
+  }
 }

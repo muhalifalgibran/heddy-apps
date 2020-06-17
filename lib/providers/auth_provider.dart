@@ -77,7 +77,6 @@ class AuthProvider {
 
   Future<dynamic> loginUserManual(String email, String password) async {
     var responseJson;
-    print(email + password);
     try {
       final response = await http.post(url + "users/login",
           headers: {"Content-Type": "application/json"},

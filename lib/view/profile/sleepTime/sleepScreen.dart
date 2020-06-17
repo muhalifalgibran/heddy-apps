@@ -1,4 +1,7 @@
 import 'package:fit_app/core/res/app_color.dart';
+import 'package:fit_app/models/general_post.dart';
+import 'package:fit_app/network/Response.dart';
+import 'package:fit_app/view/home/homeScreen.dart';
 import 'package:fit_app/view/profile/sleepTime/sleepBloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +109,40 @@ class _SleepScreenState extends State<SleepScreen> {
           builder: (context, snapshot) {
             return SafeArea(
               child: Stack(
-                children: <Widget>[background(snapshot), content(snapshot)],
+                children: <Widget>[
+                  background(snapshot),
+                  content(snapshot),
+                  StreamBuilder(
+                      stream: _bloc.postSleepStream,
+                      builder: (context,
+                          AsyncSnapshot<Response<GeneralResponse>> snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data.status) {
+                            case Status.LOADING:
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                              break;
+                            case Status.SUCCESS:
+                              print("sas");
+                              navigateToPage(context);
+                              break;
+                            case Status.ERROR:
+                              return Center(
+                                  child: Text(
+                                "Terjadi kesalahan, input lagi nanti",
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.0),
+                                textAlign: TextAlign.center,
+                              ));
+                              break;
+                          }
+                        }
+                        return Container();
+                      }),
+                ],
               ),
             );
           }),
@@ -432,6 +468,10 @@ class _SleepScreenState extends State<SleepScreen> {
             ),
           );
         });
+  }
+
+  Future navigateToPage(BuildContext context) async {
+    Navigator.of(context).pop();
   }
 
   Widget hourMinute15IntervalWake() {

@@ -30,6 +30,7 @@ class Dashboard {
 
 class Data {
   Data({
+    this.name,
     this.mineral,
     this.sleepDuration,
     this.food,
@@ -37,26 +38,61 @@ class Data {
     this.score,
   });
 
+  String name;
   Mineral mineral;
   SleepDuration sleepDuration;
   Food food;
-  List<dynamic> activity;
+  Activity activity;
   int score;
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
+        name: json["name"],
         mineral: Mineral.fromJson(json["mineral"]),
         sleepDuration: SleepDuration.fromJson(json["sleep_duration"]),
         food: Food.fromJson(json["food"]),
-        activity: List<dynamic>.from(json["activity"].map((x) => x)),
+        activity: Activity.fromJson(json["activity"]),
         score: json["score"],
       );
 
   Map<String, dynamic> toJson() => {
+        "name": name,
         "mineral": mineral.toJson(),
         "sleep_duration": sleepDuration.toJson(),
         "food": food.toJson(),
-        "activity": List<dynamic>.from(activity.map((x) => x)),
+        "activity": activity.toJson(),
         "score": score,
+      };
+}
+
+class Activity {
+  Activity({
+    this.id,
+    this.startActivity,
+    this.endActivity,
+    this.name,
+    this.url,
+  });
+
+  int id;
+  String startActivity;
+  String endActivity;
+  String name;
+  String url;
+
+  factory Activity.fromJson(Map<String, dynamic> json) => Activity(
+        id: json["id"],
+        startActivity: json["start_activity"],
+        endActivity: json["end_activity"],
+        name: json["name"],
+        url: json["url"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "start_activity": startActivity,
+        "end_activity": endActivity,
+        "name": name,
+        "url": url,
       };
 }
 

@@ -14,4 +14,12 @@ class CommunityRepository {
     final response = await userProvider.getProfile(token);
     return UserAttribut.fromJson(response);
   }
+
+  Future<GeneralResponse> setProfile(int attr, String profil) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    token = pref.getString('token');
+    final response = await userProvider.setProfil(attr, profil, token);
+    print(response);
+    return GeneralResponse.fromJson(response);
+  }
 }

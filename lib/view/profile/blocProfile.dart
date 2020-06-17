@@ -52,10 +52,10 @@ class ProfileBloc {
     }
   }
 
-  getDashboard() async {
+  getDashboard(String date) async {
     dashboardDatasSink.add(Response.loading("Sedang mengambil data..."));
     try {
-      Dashboard userAct = await _repository.getDashboard();
+      Dashboard userAct = await _repository.getDashboard(date);
       dashboardDatasSink.add(Response.success(userAct));
     } catch (e) {
       dashboardDatasSink.add(Response.error(e.toString()));

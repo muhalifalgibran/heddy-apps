@@ -75,13 +75,14 @@ class _FoodConsumtionState extends State<FoodConsumtion> {
           IconButton(
             icon: Icon(Icons.history),
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) {
-                    return FoodHistoryScreen();
-                  },
-                ),
-              );
+              Navigator.of(context).pushNamed('/foodHistory');
+              // Navigator.of(context).push(
+              //   MaterialPageRoute(
+              //     builder: (context) {
+              //       return FoodHistoryScreen();
+              //     },
+              //   ),
+              // );
             },
           )
         ],

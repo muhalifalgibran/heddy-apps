@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:fit_app/core/tools/constants.dart' as Constants;
@@ -45,12 +46,14 @@ class UserActivityProvider {
     return responseJson;
   }
 
-  Future<dynamic> getDashboard(String token) async {
+  Future<dynamic> getDashboard(String date, String token) async {
     var responseJson;
     try {
-      final response = await http
-          .get(url + 'dashboard/get-today', headers: {"api_token": token});
+      final response = await http.post(url + 'dashboard/get-history',
+          headers: {"api_token": token, "Content-Type": "application/json"},
+          body: jsonEncode({"date": date}));
       print("res:" + response.statusCode.toString());
+      print(date);
       responseJson = CustomException().response(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');

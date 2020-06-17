@@ -489,7 +489,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   Future navigateToPage(BuildContext context) async {
-    Navigator.pushReplacementNamed(context, '/home');
+    Navigator.popAndPushNamed(context, '/home');
   }
 
   Widget background() {

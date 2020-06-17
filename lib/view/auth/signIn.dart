@@ -189,9 +189,9 @@ class _SignInState extends State<SignIn> {
 
   Future navigateToPage(BuildContext context, int code) async {
     if (code == 1) {
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.of(context).pushReplacementNamed('/home');
     } else {
-      Navigator.pushNamed(context, '/registration');
+      Navigator.of(context).pushNamed('/registration');
     }
   }
 
@@ -234,33 +234,33 @@ class _SignInState extends State<SignIn> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    FlatButton(
-                      color: HexColor('4267B2'),
-                      textColor: Colors.white,
-                      disabledColor: Colors.grey,
-                      disabledTextColor: Colors.black,
-                      padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
-                      splashColor: Colors.blueAccent,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(30.0)),
-                      onPressed: () {
-                        /*...*/
-                      },
-                      child: Row(
-                        children: <Widget>[
-                          Icon(LineIcons.facebook),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Text(
-                                "Masuk dengan Facebook",
-                                style: TextStyle(fontSize: 14.0),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // FlatButton(
+                    //   color: HexColor('4267B2'),
+                    //   textColor: Colors.white,
+                    //   disabledColor: Colors.grey,
+                    //   disabledTextColor: Colors.black,
+                    //   padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+                    //   splashColor: Colors.blueAccent,
+                    //   shape: RoundedRectangleBorder(
+                    //       borderRadius: new BorderRadius.circular(30.0)),
+                    //   onPressed: () {
+                    //     /*...*/
+                    //   },
+                    //   child: Row(
+                    //     children: <Widget>[
+                    //       Icon(LineIcons.facebook),
+                    //       Expanded(
+                    //         child: Align(
+                    //           alignment: Alignment.center,
+                    //           child: Text(
+                    //             "Masuk dengan Facebook",
+                    //             style: TextStyle(fontSize: 14.0),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     SizedBox(
                       height: 10.0,
                     ),
@@ -361,11 +361,12 @@ class _SignInState extends State<SignIn> {
                               case Status.ERROR:
                                 return Center(
                                     child: Text(
-                                  "Periksa kembali masukan anda",
+                                  "Periksa kembali masukan atau cek email kamu",
                                   style: TextStyle(
                                       color: Colors.red,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18.0),
+                                  textAlign: TextAlign.center,
                                 ));
                                 break;
                             }

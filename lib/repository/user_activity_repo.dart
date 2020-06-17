@@ -18,10 +18,10 @@ class UserActivityRepository {
     return UserActivity.fromJson(response);
   }
 
-  Future<Dashboard> getDashboard() async {
+  Future<Dashboard> getDashboard(String date) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     token = pref.getString('token');
-    final response = await userProvider.getDashboard(token);
+    final response = await userProvider.getDashboard(date, token);
     return Dashboard.fromJson(response);
   }
 }

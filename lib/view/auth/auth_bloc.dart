@@ -24,10 +24,11 @@ class AuthBloc {
       _dataSignUpController.stream;
 
   signIn(String email, String password) async {
-    SignInResponse userAct;
     signUpDataSink.add(Response.loading("Sedang mengambil data..."));
     try {
-      userAct = await _repository.loginUserManual(email, password);
+      SignInResponse userAct =
+          await _repository.loginUserManual(email, password);
+      print("sssdfasd" + userAct.toString());
       signUpDataSink.add(Response.success(userAct));
     } catch (e) {
       signUpDataSink.add(Response.error(e.toString()));

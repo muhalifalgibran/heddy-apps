@@ -224,7 +224,7 @@ class _NewSignUpState extends State<NewSignUp> {
                               password.text = null;
                               return Center(
                                   child: Text(
-                                "Sukses daftar, silahkan kembali ke Login",
+                                "Sukses daftar, silahkan cek email kamu",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: AppColor.primaryColor,
@@ -377,7 +377,7 @@ class _NewSignUpState extends State<NewSignUp> {
                 child: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    "Masuk",
+                    "Daftar",
                     style: TextStyle(fontSize: 14.0),
                   ),
                 ),
