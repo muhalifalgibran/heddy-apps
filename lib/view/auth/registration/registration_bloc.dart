@@ -15,11 +15,11 @@ class RegistrationBloc {
       _dataController.stream;
 
   updateUserProfile(int gender, int height, int weight, String sleepTime,
-      int activityLevel) async {
+      int activityLevel, String dateOfBirth) async {
     registerDataSink.add(Response.loading("Sedang mengambil data..."));
     try {
       GeneralResponse firstAuth = await _repository.updateUserProfile(
-          gender, height, weight, sleepTime, activityLevel);
+          gender, height, weight, sleepTime, activityLevel, dateOfBirth);
       registerDataSink.add(Response.success(firstAuth));
     } catch (e) {
       registerDataSink.add(Response.error(e.toString()));

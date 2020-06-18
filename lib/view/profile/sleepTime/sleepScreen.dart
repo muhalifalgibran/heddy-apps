@@ -1,5 +1,6 @@
 import 'package:fit_app/core/res/app_color.dart';
 import 'package:fit_app/models/general_post.dart';
+import 'package:fit_app/models/sleep_check.dart';
 import 'package:fit_app/network/Response.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
 import 'package:fit_app/view/profile/sleepTime/sleepBloc.dart';
@@ -26,46 +27,89 @@ class _SleepScreenState extends State<SleepScreen> {
   bool isVisible = false;
   final _bloc = SleepBloc();
   int _sleepStep = 0;
+  int _sleepStepButton = 0;
   String _buttonText = "Mulai Tidur";
   String formattedDate;
   String tanggal;
-  var dateFirstSleep = new DateTime.now();
   String formattedSleep;
   bool isManuallyInput = false;
+  bool readyToClick = false;
+  bool buttonBack = false;
 
   @override
   void initState() {
     super.initState();
     var now = new DateTime.now();
+    var dateFirstSleep = new DateTime.now();
     tanggal = DateFormat.yMMMMEEEEd().format(now);
     handleAppLifecycleState();
     formattedDate = DateFormat('kk:mm').format(now);
     initializeDateFormatting('id', null);
     Intl.defaultLocale = 'id';
+    _bloc.checkSleep();
+    formattedSleep = DateFormat('kk:mm').format(dateFirstSleep);
   }
 
   @override
   void dispose() {
-    super.dispose();
     _bloc.dispose();
+    super.dispose();
   }
 
   _onpressed() {
     setState(() {
       if (_sleepStep == 0) {
+        print(formattedSleep);
+        _bloc.createStart(formattedSleep);
         _sleepStep = 1;
         _buttonText = "Siap Bangun!";
       } else if (_sleepStep == 1) {
         _sleepStep = 2;
+        _sleepStepButton = 2;
         _bloc.sleepEventSink.add(IsWake());
         _buttonText = "Simpan";
         var now = new DateTime.now();
         formattedDate = DateFormat('kk:mm').format(now);
         isVisible = true;
       } else if (_sleepStep == 2) {
-        _bloc.createManual(formattedSleep, formattedDate);
+        print("ddd");
+        _sleepStepButton = 3;
       }
+      // if (buttonBack) {
+      //   navigateToPage(context);
+      // }
+      if (readyToClick) {
+        print("bloc");
+        _bloc.createManual(formattedSleep, formattedDate);
+        _bloc.checkSleep();
+
+        // navigateToPage(context);
+      }
+      print("step:" + _sleepStepButton.toString());
     });
+  }
+
+  void _showDialog() {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Anda sudah tidur"),
+          content: new Text("Anda telah melakukan tidur malam"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   handleAppLifecycleState() {
@@ -106,14 +150,58 @@ class _SleepScreenState extends State<SleepScreen> {
       body: StreamBuilder<bool>(
           initialData: true,
           stream: _bloc.sleepStateStream,
-          builder: (context, snapshot) {
+          builder: (context, snapshot1) {
             return SafeArea(
               child: Stack(
                 children: <Widget>[
-                  background(snapshot),
-                  content(snapshot),
+                  background(snapshot1),
                   StreamBuilder(
-                      stream: _bloc.postSleepStream,
+                      stream: _bloc.checkStream,
+                      builder: (context,
+                          AsyncSnapshot<Response<SleepCheck>> snapshot) {
+                        if (snapshot.hasData) {
+                          switch (snapshot.data.status) {
+                            case Status.LOADING:
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                              break;
+                            case Status.SUCCESS:
+                              switch (snapshot.data.data.data.code) {
+                                case 0:
+                                  return content(
+                                      snapshot1, snapshot.data.data.data);
+                                  break;
+                                case 1:
+                                  _sleepStep = 1;
+                                  return content(
+                                      snapshot1, snapshot.data.data.data);
+                                  break;
+                                case 2:
+                                  // _showDialog();
+                                  // navigateToPage(context);
+                                  return backToDashboard();
+                                  break;
+                              }
+
+                              break;
+                            case Status.ERROR:
+                              return Center(
+                                  child: Text(
+                                "Terjadi kesalahan, input lagi nanti",
+                                style: TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18.0),
+                                textAlign: TextAlign.center,
+                              ));
+                              break;
+                          }
+                        }
+                        return Container();
+                      }),
+                  StreamBuilder(
+                      stream: _bloc.postSleepManualStream,
                       builder: (context,
                           AsyncSnapshot<Response<GeneralResponse>> snapshot) {
                         if (snapshot.hasData) {
@@ -124,8 +212,9 @@ class _SleepScreenState extends State<SleepScreen> {
                               );
                               break;
                             case Status.SUCCESS:
-                              print("sas");
-                              navigateToPage(context);
+                              print("dsad");
+                              _bloc.checkSleep();
+                              // navigateToPage(context);
                               break;
                             case Status.ERROR:
                               return Center(
@@ -149,8 +238,11 @@ class _SleepScreenState extends State<SleepScreen> {
     );
   }
 
-  Widget content(AsyncSnapshot<bool> snapshot) {
-    formattedSleep = DateFormat('kk:mm').format(dateFirstSleep);
+  Widget content(AsyncSnapshot<bool> snapshot, Data data) {
+    if (data.startSleep != null) {
+      formattedSleep = data.startSleep;
+    }
+
     return Center(
       child: Container(
         padding:
@@ -272,11 +364,11 @@ class _SleepScreenState extends State<SleepScreen> {
                         child: Align(
                           alignment: Alignment.center,
                           child: (() {
-                            if (_sleepStep == 0)
+                            if (_sleepStepButton == 0)
                               return Icon(Typicons.minus, color: Colors.white);
-                            else if (_sleepStep == 1) {
+                            else if (_sleepStepButton == 1) {
                               return Icon(Typicons.minus, color: Colors.white);
-                            } else if (_sleepStep == 2) {
+                            } else if (_sleepStepButton == 2) {
                               return Text(
                                 "$formattedDate",
                                 style: TextStyle(
@@ -319,7 +411,21 @@ class _SleepScreenState extends State<SleepScreen> {
                   borderRadius: new BorderRadius.circular(30.0)),
               onPressed: _onpressed,
               child: Text(
-                _buttonText,
+                (() {
+                  // your code here
+                  if (_sleepStep == 0) {
+                    return "Mulai tidur";
+                  } else if (_sleepStep == 1) {
+                    return "Siap bangun!";
+                  } else if (_sleepStep == 2) {
+                    return "Simpan";
+                  }
+                  if (_sleepStepButton == 2) {
+                    buttonBack = true;
+                    _sleepStepButton = 3;
+                    return "Simpan";
+                  }
+                }()),
                 style: TextStyle(fontSize: 14.0),
               ),
             ),
@@ -352,6 +458,13 @@ class _SleepScreenState extends State<SleepScreen> {
   }
 
   Widget background(AsyncSnapshot<bool> snapshot) {
+    if (!snapshot.data) {
+      readyToClick = true;
+      print("d");
+    }
+    print(snapshot.data);
+
+    print(_sleepStepButton);
     return Stack(children: <Widget>[
       Container(color: snapshot.data ? AppColor.bgSleep : AppColor.bgWakeUp),
       Positioned(
@@ -455,7 +568,10 @@ class _SleepScreenState extends State<SleepScreen> {
                           borderRadius: new BorderRadius.circular(30.0)),
                       onPressed: () {
                         _bloc.createManual(_timeSleep, _timeWakeUp);
+                        _bloc.checkSleep();
+
                         Navigator.pop(context);
+                        // navigateToPage(context);
                       },
                       child: Text(
                         "Simpan",
@@ -471,7 +587,7 @@ class _SleepScreenState extends State<SleepScreen> {
   }
 
   Future navigateToPage(BuildContext context) async {
-    Navigator.of(context).pop();
+    return Navigator.of(context).pop();
   }
 
   Widget hourMinute15IntervalWake() {
@@ -508,6 +624,40 @@ class _SleepScreenState extends State<SleepScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget backToDashboard() {
+    return Container(
+      child: Center(
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 300.0,
+            ),
+            Text("Kamu telah tidur malam ini",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 18.0,
+                )),
+            SizedBox(
+              height: 10.0,
+            ),
+            RaisedButton(
+              textColor: Colors.black,
+              disabledColor: Colors.grey,
+              disabledTextColor: Colors.black,
+              padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+              splashColor: Colors.blueAccent,
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(30.0)),
+              child: Text("Kembali ke beranda"),
+              onPressed: () => navigateToPage(context),
+            )
+          ],
         ),
       ),
     );

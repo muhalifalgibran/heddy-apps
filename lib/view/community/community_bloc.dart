@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:fit_app/models/general_post.dart';
 import 'package:fit_app/models/user_attribute.dart';
@@ -42,7 +43,7 @@ class CommunityBloc {
       UserAttribut user = await _repository.getProfile();
       postSleepSink.add(Response.success(user));
     } catch (e) {
-      print(e);
+      print("sasd+ " + e.toString());
       postSleepSink.add(Response.error(e.toString()));
     }
   }

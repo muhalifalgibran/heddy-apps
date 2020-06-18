@@ -16,11 +16,11 @@ class AuthRepository {
   }
 
   Future<GeneralResponse> updateUserProfile(int gender, int height, int weight,
-      String sleepTime, int activityLevel) async {
+      String sleepTime, int activityLevel, String dateOfBirth) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     token = pref.getString('token');
     final response = await signInProvider.updateUserProfile(
-        gender, height, weight, sleepTime, activityLevel, token);
+        gender, height, weight, sleepTime, activityLevel, dateOfBirth, token);
     return GeneralResponse.fromJson(response);
   }
 

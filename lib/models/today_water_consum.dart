@@ -69,14 +69,14 @@ class History {
   int userActivityId;
   int qty;
   int size;
-  DateTime timestamp;
+  String timestamp;
 
   factory History.fromJson(Map<String, dynamic> json) => History(
         id: json["id"],
         userActivityId: json["user_activity_id"],
         qty: json["qty"],
         size: json["size"],
-        timestamp: DateTime.parse(json["timestamp"]),
+        timestamp: (json["timestamp"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -84,6 +84,6 @@ class History {
         "user_activity_id": userActivityId,
         "qty": qty,
         "size": size,
-        "timestamp": timestamp.toIso8601String(),
+        "timestamp": timestamp,
       };
 }

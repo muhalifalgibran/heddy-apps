@@ -1,6 +1,6 @@
 library constans;
 
-const String API_URL = 'http://149.28.134.174:5000/';
+const String API_URL = 'http://103.214.112.150:5000/';
 String token = '';
 
 class MenuLogout {

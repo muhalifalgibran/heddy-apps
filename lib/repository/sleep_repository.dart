@@ -1,4 +1,5 @@
 import 'package:fit_app/models/general_post.dart';
+import 'package:fit_app/models/sleep_check.dart';
 import 'package:fit_app/providers/sleep_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +19,14 @@ class SleepRepository {
     token = pref.getString('token');
     final response = await userProvider.createEnd(sleepEnd, token);
     return GeneralResponse.fromJson(response);
+  }
+
+  Future<SleepCheck> checkSleep() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    token = pref.getString('token');
+    final response = await userProvider.checkSleep(token);
+
+    return SleepCheck.fromJson(response);
   }
 
   Future<GeneralResponse> createManual(

@@ -52,7 +52,7 @@ class UserActivityProvider {
       final response = await http.post(url + 'dashboard/get-history',
           headers: {"api_token": token, "Content-Type": "application/json"},
           body: jsonEncode({"date": date}));
-      print("res:" + response.statusCode.toString());
+      print("res:" + token.toString());
       print(date);
       responseJson = CustomException().response(response);
     } on SocketException {

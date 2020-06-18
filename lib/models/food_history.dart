@@ -64,14 +64,14 @@ class Malam {
 
   int id;
   int type;
-  DateTime timestamp;
+  String timestamp;
   String name;
   String img;
 
   factory Malam.fromJson(Map<String, dynamic> json) => Malam(
         id: json["id"],
         type: json["type"],
-        timestamp: DateTime.parse(json["timestamp"]),
+        timestamp: (json["timestamp"]),
         name: json["name"],
         img: json["img"],
       );
@@ -79,7 +79,7 @@ class Malam {
   Map<String, dynamic> toJson() => {
         "id": id,
         "type": type,
-        "timestamp": timestamp.toIso8601String(),
+        "timestamp": timestamp,
         "name": name,
         "img": img,
       };

@@ -40,7 +40,6 @@ class NewHomeScreenFragment implements BaseHomeFragment {
 
   @override
   Widget view = NewHomeScreen();
-
   @override
   void onTabSelected(BuildContext mContext) {
     BlocProvider.of<HomeScreenBloc>(mContext).add(this);
@@ -72,20 +71,11 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
         photoUrl = value.getString('photoUrl');
         isComplete = value.getInt('isComplete');
         if (isComplete == 0) {
-          print("as");
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-            builder: (context) {
-              return RegistrationScreen();
-            },
-          ), ModalRoute.withName('/registration'));
+          Navigator.of(context).pushNamed('/registration');
         }
       });
     });
     _bloc.getDashboard(currentTime);
-
-    print(isComplete.toString());
-    print(token.toString());
-
     _calendarController = CalendarController();
     initializeDateFormatting('id', null);
     Intl.defaultLocale = 'id';
@@ -99,7 +89,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     super.dispose();
   }
 
-  void choiceAction(String items) {
+  void choiceAction(String items) async {
     if (items == MenuLogout.logout) {
       signOutGoogle().then((value) {
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
@@ -108,12 +98,19 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
           },
         ), ModalRoute.withName('/login'));
       });
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      preferences.clear();
     }
   }
 
   Future<SharedPreferences> getNama() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     return pref;
+  }
+
+  Future<void> _onRefresh() {
+    currentTime = DateFormat('yyyy-MM-dd').format(now);
+    return _bloc.getDashboard(currentTime);
   }
 
   @override
@@ -123,7 +120,7 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
     return SafeArea(
         child: Scaffold(
       body: RefreshIndicator(
-          onRefresh: () => _bloc.getDashboard(currentTime),
+          onRefresh: () => _onRefresh(),
           child: StreamBuilder<Response<Dashboard>>(
             stream: _bloc.dashboardDatasStream,
             builder: (context, snapshot) {
@@ -242,396 +239,435 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
         SizedBox(
           height: 10.0,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            //air mineral
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pushNamed('/water');
-
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => WaterConsumtion()));
-              },
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                height: 210.0,
-                width: 190.0,
-                child: Card(
-                  color: AppColor.blueHard,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Container(
-                                padding: EdgeInsets.all(4.0),
-                                color: Colors.white,
-                                child: Icon(
-                                  Entypo.water,
-                                  color: AppColor.primaryColor,
-                                  size: 10.0,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text(
-                              "Air Mineral",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10.0),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        Center(
-                          child: CircularPercentIndicator(
-                            radius: 80.0,
-                            percent: _water,
-                            progressColor: AppColor.blueHard2,
-                            animationDuration: 1000,
-                            lineWidth: 10.0,
-                            center: Text(
-                              "$_percent%",
-                              style: TextStyle(
-                                fontSize: 16.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+        Container(
+          width: MediaQuery.of(context).size.width,
+          height: 450.0,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      //air mineral
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed('/water');
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) => WaterConsumtion()));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8.0),
+                          height: 210.0,
+                          width: 190.0,
+                          child: Card(
+                            color: AppColor.blueHard,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Container(
+                                          padding: EdgeInsets.all(4.0),
+                                          color: Colors.white,
+                                          child: Icon(
+                                            Entypo.water,
+                                            color: AppColor.primaryColor,
+                                            size: 10.0,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Text(
+                                        "Air Mineral",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10.0),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Center(
+                                    child: CircularPercentIndicator(
+                                      radius: 80.0,
+                                      percent: _water,
+                                      progressColor: AppColor.blueHard2,
+                                      animationDuration: 1000,
+                                      lineWidth: 10.0,
+                                      center: Text(
+                                        "$_percent%",
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: '${data.mineral.sum} ',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24.0,
+                                          fontWeight: FontWeight.bold),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: 'ml',
+                                            style: TextStyle(fontSize: 12.0)),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    "Target ${data.mineral.max}ml",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
-                        Spacer(),
-                        RichText(
-                          text: TextSpan(
-                            text: '${data.mineral.sum} ',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold),
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: 'ml', style: TextStyle(fontSize: 12.0)),
-                            ],
+                      ),
+                      // waktu tidur
+                      GestureDetector(
+                        onTap: () {
+                          // Navigator.of(context).push(
+                          //   MaterialPageRoute(
+                          //     builder: (context) {
+                          //       return SleepScreen();
+                          //     },
+                          //   ),
+                          // );
+                          Navigator.of(context).pushNamed('/sleep');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8.0),
+                          height: 210.0,
+                          width: 190.0,
+                          child: Card(
+                            color: AppColor.blueCyan,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Container(
+                                          padding: EdgeInsets.all(4.0),
+                                          color: Colors.white,
+                                          child: Icon(
+                                            FontAwesome.bed,
+                                            color: AppColor.blueCyan,
+                                            size: 10.0,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Text(
+                                        "Waktu Tidur",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10.0),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Center(
+                                      child: Image.asset(
+                                          "assets/images/heart-1.png")),
+                                  Spacer(),
+                                  RichText(
+                                    text: TextSpan(
+                                      text: '${data.sleepDuration.hours} ',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24.0,
+                                          fontWeight: FontWeight.bold),
+                                      children: <TextSpan>[
+                                        TextSpan(
+                                            text: ' h ',
+                                            style: TextStyle(fontSize: 12.0)),
+                                        TextSpan(
+                                          text:
+                                              '${data.sleepDuration.minutes} ',
+                                        ),
+                                        TextSpan(
+                                            text: 'min',
+                                            style: TextStyle(fontSize: 12.0)),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    "Target 8 Jam",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                        Text(
-                          "Target ${data.mineral.max}ml",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ],
-                    ),
+                      )
+                    ],
                   ),
-                ),
-              ),
-            ),
-            // waktu tidur
-            GestureDetector(
-              onTap: () {
-                // Navigator.of(context).push(
-                //   MaterialPageRoute(
-                //     builder: (context) {
-                //       return SleepScreen();
-                //     },
-                //   ),
-                // );
-                Navigator.of(context).pushNamed('/sleep');
-              },
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                height: 210.0,
-                width: 190.0,
-                child: Card(
-                  color: AppColor.blueCyan,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Container(
-                                padding: EdgeInsets.all(4.0),
-                                color: Colors.white,
-                                child: Icon(
-                                  FontAwesome.bed,
-                                  color: AppColor.blueCyan,
-                                  size: 10.0,
-                                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      //konsumsi makan
+                      GestureDetector(
+                        onTap: () {
+                          // Navigator.push(context,
+                          //     MaterialPageRoute(builder: (context) => FoodConsumtion()));
+                          Navigator.of(context).pushNamed('/food');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8.0),
+                          height: 210.0,
+                          width: 190.0,
+                          child: Card(
+                            color: AppColor.pinkHard,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Container(
+                                          padding: EdgeInsets.all(4.0),
+                                          color: Colors.white,
+                                          child: Icon(
+                                            FontAwesome.food,
+                                            color: AppColor.pinkHard,
+                                            size: 10.0,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Text(
+                                        "Konsumsi Makan",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10.0),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  SizedBox(
+                                    height: 30.0,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Checkbox(
+                                            value: (() {
+                                              if (data.food.pagi == 1)
+                                                return true;
+                                              else
+                                                return false;
+                                            }()),
+                                            onChanged: null),
+                                        Text(
+                                          "Makan Pagi",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12.0),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 30.0,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Checkbox(
+                                            value: (() {
+                                              if (data.food.siang == 1)
+                                                return true;
+                                              else
+                                                return false;
+                                            }()),
+                                            onChanged: null),
+                                        Text(
+                                          "Makan Siang",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12.0),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 30.0,
+                                    child: Row(
+                                      children: <Widget>[
+                                        Checkbox(
+                                            value: (() {
+                                              if (data.food.malam == 1)
+                                                return true;
+                                              else
+                                                return false;
+                                            }()),
+                                            onChanged: null),
+                                        Text(
+                                          "Makan Malam",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12.0),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Text('Makan Pagi ',
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold)),
+                                  Text(
+                                    "06:00 - 06:30",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text(
-                              "Waktu Tidur",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10.0),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        Center(child: Image.asset("assets/images/heart-1.png")),
-                        Spacer(),
-                        RichText(
-                          text: TextSpan(
-                            text: '${data.sleepDuration.hours} ',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold),
-                            children: <TextSpan>[
-                              TextSpan(
-                                  text: ' h ',
-                                  style: TextStyle(fontSize: 12.0)),
-                              TextSpan(
-                                text: '${data.sleepDuration.minutes} ',
-                              ),
-                              TextSpan(
-                                  text: 'min',
-                                  style: TextStyle(fontSize: 12.0)),
-                            ],
                           ),
                         ),
-                        Text(
-                          "Target 8 Jam",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
+                      ),
+                      //olahraga
+                      GestureDetector(
+                        onTap: () {
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => SportTrackerScreen()));
+                          Navigator.of(context).pushNamed('/sport');
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(8.0),
+                          height: 210.0,
+                          width: 190.0,
+                          child: Card(
+                            color: AppColor.yellowHard,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        child: Container(
+                                          padding: EdgeInsets.all(4.0),
+                                          color: Colors.white,
+                                          child: Icon(
+                                            FontAwesome.fire,
+                                            color: AppColor.yellowHard,
+                                            size: 10.0,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 10.0,
+                                      ),
+                                      Text(
+                                        "Olahraga",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 10.0),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(
+                                    height: 10.0,
+                                  ),
+                                  Center(
+                                      child: Image.asset(
+                                          "assets/images/step-1.png")),
+                                  Spacer(),
+                                  Text(
+                                      data.activity.name != null
+                                          ? data.activity.name
+                                          : "Belum berolahraga",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.bold)),
+                                  Text(
+                                    durration,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      )
+                    ],
+                  )
+                ],
               ),
-            )
-          ],
+            ],
+          ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            //konsumsi makan
-            GestureDetector(
-              onTap: () {
-                // Navigator.push(context,
-                //     MaterialPageRoute(builder: (context) => FoodConsumtion()));
-                Navigator.of(context).pushNamed('/food');
-              },
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                height: 210.0,
-                width: 190.0,
-                child: Card(
-                  color: AppColor.pinkHard,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Container(
-                                padding: EdgeInsets.all(4.0),
-                                color: Colors.white,
-                                child: Icon(
-                                  FontAwesome.food,
-                                  color: AppColor.pinkHard,
-                                  size: 10.0,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text(
-                              "Konsumsi Makan",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10.0),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        SizedBox(
-                          height: 30.0,
-                          child: Row(
-                            children: <Widget>[
-                              Checkbox(
-                                  value: (() {
-                                    if (data.food.pagi == 1)
-                                      return true;
-                                    else
-                                      return false;
-                                  }()),
-                                  onChanged: null),
-                              Text(
-                                "Makan Pagi",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0),
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 30.0,
-                          child: Row(
-                            children: <Widget>[
-                              Checkbox(
-                                  value: (() {
-                                    if (data.food.siang == 1)
-                                      return true;
-                                    else
-                                      return false;
-                                  }()),
-                                  onChanged: null),
-                              Text(
-                                "Makan Siang",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0),
-                              )
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 30.0,
-                          child: Row(
-                            children: <Widget>[
-                              Checkbox(
-                                  value: (() {
-                                    if (data.food.malam == 1)
-                                      return true;
-                                    else
-                                      return false;
-                                  }()),
-                                  onChanged: null),
-                              Text(
-                                "Makan Malam",
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12.0),
-                              )
-                            ],
-                          ),
-                        ),
-                        Spacer(),
-                        Text('Makan Pagi ',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold)),
-                        Text(
-                          "06:00 - 06:30",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            //olahraga
-            GestureDetector(
-              onTap: () {
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (context) => SportTrackerScreen()));
-                Navigator.of(context).pushNamed('/sport');
-              },
-              child: Container(
-                padding: EdgeInsets.all(8.0),
-                height: 210.0,
-                width: 190.0,
-                child: Card(
-                  color: AppColor.yellowHard,
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Container(
-                                padding: EdgeInsets.all(4.0),
-                                color: Colors.white,
-                                child: Icon(
-                                  FontAwesome.fire,
-                                  color: AppColor.yellowHard,
-                                  size: 10.0,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10.0,
-                            ),
-                            Text(
-                              "Olahraga",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 10.0),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        Center(child: Image.asset("assets/images/step-1.png")),
-                        Spacer(),
-                        Text(
-                            data.activity.name != null
-                                ? data.activity.name
-                                : "Belum berolahraga",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold)),
-                        Text(
-                          durration,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        )
       ],
     );
   }
 
   Widget nameCard(Dashboard data) {
+    String category;
+    if (data.data.score < 40) {
+      category = "Buruk";
+    } else if (data.data.score >= 40 && data.data.score < 70) {
+      category = "cukup baik";
+    } else if (data.data.score >= 70 && data.data.score < 85) {
+      category = "Baik";
+    } else if (data.data.score >= 85 && data.data.score < 99) {
+      category = "sangat baik";
+    } else if (data.data.score >= 100) {
+      category = "Luar biasa!";
+    }
+
     return Column(
       children: <Widget>[
         Row(
@@ -703,16 +739,22 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
                             height: 10.0,
                           ),
                           Container(
-                            width: 200.0,
-                            child: Text(
-                              "Berdasarkan hasil tes kesehatan keseluruhan kamu, nilai yang didapatkan termasuk kategori Baik. ",
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 5,
-                              style: TextStyle(
-                                  color: AppColor.colorParagraphGrey,
-                                  fontSize: 12.0),
-                            ),
-                          ),
+                              width: 200.0,
+                              child: RichText(
+                                text: TextSpan(
+                                  text:
+                                      "Berdasarkan hasil tes kesehatan keseluruhan kamu, nilai yang didapatkan termasuk kategori ",
+                                  style: TextStyle(
+                                      color: AppColor.colorParagraphGrey,
+                                      fontSize: 12.0),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                        text: category,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              )),
                           SizedBox(
                             height: 20.0,
                           ),

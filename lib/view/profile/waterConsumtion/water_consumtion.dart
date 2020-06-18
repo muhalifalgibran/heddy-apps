@@ -134,13 +134,13 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
 
   Widget listItem(History history) {
     // DateTime todayDate = DateTime.parse(history.timestamp);
-    var formatted = formatDate(history.timestamp, [
-      hh,
-      ':',
-      nn,
-      ':',
-      am,
-    ]);
+    // var formatted = formatDate(history.timestamp, [
+    //   hh,
+    //   ':',
+    //   nn,
+    //   ':',
+    //   am,
+    // ]);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.0),
       child: Column(
@@ -169,7 +169,7 @@ class _WaterConsumtionState extends State<WaterConsumtion> {
                   ),
                 ),
               ),
-              Text("$formatted"),
+              Text("${history.timestamp}"),
               RichText(
                 textAlign: TextAlign.end,
                 text: TextSpan(

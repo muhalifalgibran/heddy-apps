@@ -59,4 +59,19 @@ class SleepProvider {
     }
     return responseJson;
   }
+
+  Future<dynamic> checkSleep(String token) async {
+    var responseJson;
+    try {
+      final response = await http.get(
+        url + "sleep-history/check",
+        headers: {"api_token": token, "Content-Type": "application/json"},
+      );
+      print(response.body);
+      responseJson = CustomException().response(response);
+    } on SocketException {
+      throw FetchDataException('No Internet connection');
+    }
+    return responseJson;
+  }
 }

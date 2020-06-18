@@ -10,6 +10,7 @@ import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:fluttericon/maki_icons.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +30,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   int _height = 150;
   int _weight = 50;
   final _bloc = RegistrationBloc();
+  DateTime _date = DateTime.now();
+  String dateKirim;
+  String dateText;
 
   int _selectedIndex = 1;
 
@@ -136,6 +140,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget hourMinute15Interval() {
     return Center(
       child: Container(
+        width: 180.0,
         child: Card(
           child: Column(
             children: <Widget>[
@@ -174,6 +179,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget hourMinute15IntervalWake() {
     return Center(
       child: Container(
+        width: 180.0,
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -212,18 +218,12 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  setComplete() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    pref.setInt('isComplete', 1);
-  }
-
   Widget content() {
     return ListView(children: <Widget>[
       SizedBox(
         height: 100,
       ),
       Container(
-        height: 700,
         padding: EdgeInsets.all(12.0),
         decoration: BoxDecoration(
             color: Colors.white,
@@ -258,7 +258,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         );
                         break;
                       case Status.SUCCESS:
-                        setComplete();
                         navigateToPage(context);
                         break;
                       case Status.ERROR:
@@ -328,21 +327,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 Step(
                   title: Text("Jam Istirahat"),
-                  content: Row(
+                  content: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Container(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            hourMinute15Interval(),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        Entypo.minus,
-                        color: AppColor.primaryColor,
-                      ),
                       Container(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -351,6 +338,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           ],
                         ),
                       ),
+                      Icon(
+                        Entypo.flow_line,
+                        color: AppColor.primaryColor,
+                      ),
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            hourMinute15Interval(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Step(
+                  title: Text("Tanggal lahir"),
+                  content: Row(
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: () => selectedDate(context),
+                        child: Text(
+                            dateText == null ? "Atur tanggal lahir" : dateText),
+                      )
                     ],
                   ),
                 ),
@@ -452,7 +463,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               ],
               currentStep: _currentStep,
               onStepContinue: () {
-                if (_currentStep < 4) {
+                if (_currentStep < 5) {
                   setState(() {
                     _currentStep += 1;
                   });
@@ -467,9 +478,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         " " +
                         _selectedIndex.toString());
                   });
-                  print(_group - 1);
-                  _bloc.updateUserProfile(
-                      _group - 1, _height, _weight, sleepTime, _selectedIndex);
+                  _bloc.updateUserProfile(_group - 1, _height, _weight,
+                      sleepTime, _selectedIndex, dateKirim);
                 }
               },
               onStepCancel: () {
@@ -488,8 +498,26 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     ]);
   }
 
+  Future selectedDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: _date,
+        firstDate: DateTime(1970),
+        lastDate: DateTime(2021));
+
+    if (picked != null && picked != _date) {
+      setState(() {
+        _date = picked;
+        dateKirim = DateFormat('yyyy-MM-dd').format(picked);
+        dateText = DateFormat('dd MMM yyyy').format(picked);
+      });
+    }
+  }
+
   Future navigateToPage(BuildContext context) async {
-    Navigator.popAndPushNamed(context, '/home');
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setInt('isComplete', 1);
+    return Navigator.of(context).pushNamed('/home');
   }
 
   Widget background() {

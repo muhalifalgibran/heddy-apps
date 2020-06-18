@@ -443,27 +443,27 @@ class _SignInState extends State<SignIn> {
           ),
         ),
         SizedBox(height: 5.0),
-        RichText(
-          text: TextSpan(
-            style: TextStyle(fontSize: 10.0, color: Colors.grey),
-            children: <TextSpan>[
-              TextSpan(
-                  text: 'Lupa Kata Sandi ? ',
-                  style:
-                      TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0)),
-              TextSpan(
-                  text: 'Dapatkan Bantuan untuk Masuk!',
-                  recognizer: new TapGestureRecognizer()
-                    ..onTap = () {
-                      print('Tap Here onTap');
-                    },
-                  style: TextStyle(
-                      fontWeight: FontWeight.normal,
-                      fontSize: 12.0,
-                      color: AppColor.primaryColor)),
-            ],
-          ),
-        )
+        // RichText(
+        //   text: TextSpan(
+        //     style: TextStyle(fontSize: 10.0, color: Colors.grey),
+        //     children: <TextSpan>[
+        //       TextSpan(
+        //           text: 'Lupa Kata Sandi ? ',
+        //           style:
+        //               TextStyle(fontWeight: FontWeight.normal, fontSize: 12.0)),
+        //       TextSpan(
+        //           text: 'Dapatkan Bantuan untuk Masuk!',
+        //           recognizer: new TapGestureRecognizer()
+        //             ..onTap = () {
+        //               print('Tap Here onTap');
+        //             },
+        //           style: TextStyle(
+        //               fontWeight: FontWeight.normal,
+        //               fontSize: 12.0,
+        //               color: AppColor.primaryColor)),
+        //     ],
+        //   ),
+        // )
       ],
     );
   }

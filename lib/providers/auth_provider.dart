@@ -31,8 +31,14 @@ class AuthProvider {
     return responseJson;
   }
 
-  Future<dynamic> updateUserProfile(int gender, int height, int weight,
-      String sleepTime, int activityLevel, String token) async {
+  Future<dynamic> updateUserProfile(
+      int gender,
+      int height,
+      int weight,
+      String sleepTime,
+      int activityLevel,
+      String dateOfBirth,
+      String token) async {
     var responseJson;
     try {
       final response = await http.put(url + "users/update",
@@ -43,6 +49,7 @@ class AuthProvider {
             'weight': weight.toString(),
             'sleep_time': sleepTime,
             'activity_level': activityLevel.toString(),
+            'date_of_birth': dateOfBirth.toString(),
           }));
       print("res: " + response.body.toString());
       print(response.statusCode);

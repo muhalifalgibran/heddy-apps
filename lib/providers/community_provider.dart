@@ -17,7 +17,7 @@ class CommunityProvider {
         url + "users/get",
         headers: {"api_token": token, "Content-Type": "application/json"},
       );
-      print(response.statusCode);
+      print(response.body);
       responseJson = CustomException().response(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');
@@ -42,11 +42,14 @@ class CommunityProvider {
         case 3:
           body = jsonEncode({"weight": profil});
           break;
+        case 4:
+          body = jsonEncode({"activity_level": profil});
+          break;
       }
       final response = await http.put(url + "users/update",
           headers: {"api_token": token, "Content-Type": "application/json"},
           body: body);
-      print(response.statusCode);
+      print(response.body);
       responseJson = CustomException().response(response);
     } on SocketException {
       throw FetchDataException('No Internet connection');

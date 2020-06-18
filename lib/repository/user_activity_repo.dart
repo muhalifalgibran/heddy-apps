@@ -22,6 +22,8 @@ class UserActivityRepository {
     SharedPreferences pref = await SharedPreferences.getInstance();
     token = pref.getString('token');
     final response = await userProvider.getDashboard(date, token);
+    print("tokennya: " + token);
+    print("tokennya: ");
     return Dashboard.fromJson(response);
   }
 }

@@ -2,6 +2,7 @@ import 'package:fit_app/models/food_history.dart';
 import 'package:fit_app/view/auth/registration/dialogs/registration.dart';
 import 'package:fit_app/view/auth/signIn.dart';
 import 'package:fit_app/view/auth/splashScreen.dart';
+import 'package:fit_app/view/flashscreen/flashscreen.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
 import 'package:fit_app/view/profile/foodComsumtion/foodHistory/food_history_screen.dart';
 import 'package:fit_app/view/profile/foodComsumtion/food_consumtion.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Heddy',
       theme: ThemeData(
         textTheme: GoogleFonts.robotoTextTheme(
           Theme.of(context).textTheme,
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         // Set routes for using the Navigator.
         '/home': (BuildContext context) => new HomeScreen(),
+        '/flash': (BuildContext context) => new FlashScreen(),
         '/login': (BuildContext context) => new SignIn(),
         '/registration': (BuildContext context) => new RegistrationScreen(),
         '/water': (BuildContext context) => new WaterConsumtion(),

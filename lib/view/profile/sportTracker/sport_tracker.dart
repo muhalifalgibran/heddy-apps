@@ -17,7 +17,7 @@ class SportTrackerScreen extends StatefulWidget {
 class _SportTrackerScreenState extends State<SportTrackerScreen> {
   String _timeSleep;
   String _timeWakeUp;
-  int _select = 0;
+  int _select = 1;
   SportBloc _bloc;
 
   @override

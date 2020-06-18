@@ -37,37 +37,41 @@ class _SplashScreenState extends State<SplashScreen> {
   Future checkLog() async {
     SharedPreferences _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString('token');
-    print("tokennya: " + token);
     if (token != null) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) {
-            return HomeScreen();
-          },
-        ),
-      );
+      Navigator.of(context).pushReplacementNamed('/home');
+
+      // Navigator.of(context).push(
+      //   MaterialPageRoute(
+      //     builder: (context) {
+      //       return HomeScreen();
+      //     },
+      //   ),
+      // );
     } else {
       isLoggedIn().then((value) {
         if (!value) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return FlashScreen();
-              },
-            ),
-          );
+          // Navigator.of(context).push(
+          //   MaterialPageRoute(
+          //     builder: (context) {
+          //       return FlashScreen();
+          //     },
+          //   ),
+          // );
+          Navigator.of(context).pushReplacementNamed('/flash');
         } else {
           FirebaseAuth.instance.currentUser().then((firebaseUser) {
             //signed in
             print("logged in");
             saveData(firebaseUser);
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) {
-                  return HomeScreen();
-                },
-              ),
-            );
+            Navigator.of(context).pushReplacementNamed('/home');
+
+            // Navigator.of(context).push(
+            //   MaterialPageRoute(
+            //     builder: (context) {
+            //       return HomeScreen();
+            //     },
+            //   ),
+            // );
           });
         }
       });

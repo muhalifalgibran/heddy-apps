@@ -143,12 +143,12 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
   Widget content(Malam items) {
     // var formattedDate = DateFormat('kk:mm').format(items.timestamp);
     // var dateString = DateFormat.jm().format(items.timestamp);
-    var format = DateFormat.yMd('id');
-    var dateString = format.format(items.timestamp);
-    var formattedDate = DateFormat.jm().format(items.timestamp);
-    var today = new DateTime.now();
-    var formatedTanggal = items.timestamp.toUtc().toIso8601String();
-    var dateFormatted = DateFormat("HH:mm").format(items.timestamp.toUtc());
+    // var format = DateFormat.yMd('id');
+    // var dateString = format.format(items.timestamp);
+    // var formattedDate = DateFormat.jm().format(items.timestamp);
+    // var today = new DateTime.now();
+    // var formatedTanggal = items.timestamp.toUtc().toIso8601String();
+    // var dateFormatted = DateFormat("HH:mm").format(items.timestamp.toUtc());
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -178,7 +178,7 @@ class _FoodHistoryScreenState extends State<FoodHistoryScreen> {
         Spacer(),
         Row(
           children: <Widget>[
-            Text("$dateFormatted"),
+            Text("${items.timestamp}"),
             SizedBox(
               width: 60.0,
             ),

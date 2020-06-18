@@ -13,6 +13,7 @@ import 'package:fluttericon/elusive_icons.dart';
 import 'package:fluttericon/entypo_icons.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:fluttericon/maki_icons.dart';
 import 'package:fluttericon/octicons_icons.dart';
 import 'package:fluttericon/typicons_icons.dart';
 import 'package:fit_app/core/tools/constants.dart' as Constants;
@@ -160,7 +161,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
           child: Row(children: <Widget>[
             CircleAvatar(
               radius: 30.0,
-              backgroundImage: NetworkImage(url + data.utility.faceUrl),
+              backgroundImage: NetworkImage(data.utility.faceUrl),
             ),
             SizedBox(width: 10.0),
             Column(
@@ -193,11 +194,11 @@ class _CommunityScreenState extends State<CommunityScreen> {
               ],
             ),
             Spacer(),
-            Icon(
-              Typicons.pencil,
-              size: 16.0,
-              color: Colors.white,
-            )
+            // Icon(
+            //   Typicons.pencil,
+            //   size: 16.0,
+            //   color: Colors.white,
+            // )
           ]),
         ),
         SizedBox(
@@ -386,7 +387,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    "${data.height} kg",
+                                    "${data.height} cm",
                                     style: TextStyle(
                                         color: AppColor.pinkHard,
                                         fontSize: 18.0,
@@ -475,70 +476,76 @@ class _CommunityScreenState extends State<CommunityScreen> {
               SizedBox(
                 height: 20.0,
               ),
-              Container(
-                height: 120.0,
-                width: MediaQuery.of(context).size.width,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Card(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          decoration: BoxDecoration(
-                              color: AppColor.primaryColor,
-                              borderRadius: BorderRadius.circular(30.0)),
-                          padding: EdgeInsets.all(8.0),
-                          child: Icon(
-                            Elusive.person,
-                            size: 36.0,
-                            color: Colors.white,
+              GestureDetector(
+                onTap: () => dialogLevelActivity(),
+                child: Container(
+                  height: 120.0,
+                  width: MediaQuery.of(context).size.width,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Card(
+                        child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            decoration: BoxDecoration(
+                                color: AppColor.primaryColor,
+                                borderRadius: BorderRadius.circular(30.0)),
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(
+                              Elusive.person,
+                              size: 36.0,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 30.0,
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              "Level Aktifitas",
-                              style: TextStyle(
-                                  color: AppColor.primaryColorFont,
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            Container(
-                              height: 50.0,
-                              width: 250.0,
-                              child: Text(
-                                (() {
-                                  if (data.activityLevel == 0) {
-                                    return "Aktivitas harian dilaksanakan di dalam ruangan tertutup";
-                                  } else if (data.activityLevel == 1) {
-                                    return "Aktivitas harian dilaksanakan terbagi di dalam ruangan dan kadang turun melaksanakan aktivitas di lapangan";
-                                  } else if (data.activityLevel == 2) {
-                                    return "Aktivitas harian yang selalu dilaksanakan di lapangan terbuka terpapar sinar matahari";
-                                  } else {
-                                    return "Ayo tingkatkan produktifitas keseharianmu lagi";
-                                  }
-                                }()),
-                                style: TextStyle(
-                                    color: AppColor.colorParagraphGrey,
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.bold),
+                          SizedBox(
+                            width: 30.0,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                width: 180,
+                                child: Text(
+                                  "Level Aktifitas kamu",
+                                  style: TextStyle(
+                                      color: AppColor.primaryColorFont,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  )),
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              Container(
+                                height: 50.0,
+                                width: 250.0,
+                                child: Text(
+                                  (() {
+                                    if (data.activityLevel == 0) {
+                                      return "Aktivitas harian dilaksanakan di dalam ruangan tertutup";
+                                    } else if (data.activityLevel == 1) {
+                                      return "Aktivitas harian dilaksanakan terbagi di dalam ruangan dan kadang turun melaksanakan aktivitas di lapangan";
+                                    } else if (data.activityLevel == 2) {
+                                      return "Aktivitas harian yang selalu dilaksanakan di lapangan terbuka terpapar sinar matahari";
+                                    } else {
+                                      return "Ayo tingkatkan produktifitas keseharianmu lagi";
+                                    }
+                                  }()),
+                                  style: TextStyle(
+                                      color: AppColor.colorParagraphGrey,
+                                      fontSize: 12.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    )),
+                  ),
                 ),
               )
             ],
@@ -573,30 +580,39 @@ class _CommunityScreenState extends State<CommunityScreen> {
                     SizedBox(
                       height: 8.0,
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                    Container(
+                      height: 145.0,
+                      width: 400.0,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: <Widget>[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              hourMinute15Interval(),
+                              Container(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    hourMinute15IntervalWake(),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Entypo.minus,
+                                color: AppColor.primaryColor,
+                              ),
+                              Container(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    hourMinute15Interval(),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                        Icon(
-                          Entypo.minus,
-                          color: AppColor.primaryColor,
-                        ),
-                        Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: <Widget>[
-                              hourMinute15IntervalWake(),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     FlatButton(
                         color: AppColor.primaryColor,
@@ -732,6 +748,14 @@ class _CommunityScreenState extends State<CommunityScreen> {
               ),
             ),
           );
+        });
+  }
+
+  void dialogLevelActivity() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return MyDialog();
         });
   }
 
@@ -885,7 +909,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       color: AppColor.primaryColorFont),
                 ),
                 SizedBox(
-                  height: 10.0,
+                  height: 5.0,
                 ),
                 TimePickerSpinner(
                   itemHeight: 30.0,
@@ -928,6 +952,175 @@ class _CommunityScreenState extends State<CommunityScreen> {
             child: Image.asset('assets/images/lingkarkanan1.png'),
           )
         ],
+      ),
+    );
+  }
+}
+
+class MyDialog extends StatefulWidget {
+  @override
+  _MyDialogState createState() => new _MyDialogState();
+}
+
+class _MyDialogState extends State<MyDialog> {
+  int _selectedIndex = 1;
+
+  List<IconData> _icons = [
+    Maki.commerical_building,
+    Maki.warehouse,
+    FontAwesome5.door_open,
+  ];
+
+  List<String> _header = [
+    'Aktifitas Indoor',
+    'Aktifitas Semi-Indoor',
+    'Aktifitas Outdoor',
+  ];
+  List<String> _captions = [
+    'Aktivitas harian dilaksanakan di dalam ruangan tertutup',
+    'Aktivitas harian dilaksanakan terbagi di dalam ruangan dan kadang turun melaksanakan aktivitas di lapangan',
+    'Aktivitas harian yang selalu dilaksanakan di lapangan terbuka terpapar sinar matahari',
+  ];
+
+  Color _c = Colors.redAccent;
+
+  Widget _buildIcon(int index) {
+    return GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        child: Container(
+          height: 60.0,
+          width: 60.0,
+          decoration: BoxDecoration(
+            color: _selectedIndex == index
+                ? Theme.of(context).accentColor
+                : Colors.grey[200],
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          child: Icon(
+            _icons[index],
+            size: 25.0,
+            color: _selectedIndex == index ? Colors.white : Color(0xFFB4C1C4),
+          ),
+        ));
+  }
+
+  Widget _buildCaption(int index) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      child: Column(
+        children: <Widget>[
+          Text(
+            _header[index],
+            style: TextStyle(
+                color: AppColor.primaryColorFont,
+                fontSize: 12.0,
+                fontWeight: FontWeight.bold),
+          ),
+          SizedBox(
+            height: 14.0,
+          ),
+          Text(
+            _captions[index],
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: AppColor.colorParagraphGrey,
+                fontSize: 12.0,
+                fontWeight: FontWeight.normal),
+          )
+        ],
+      ),
+    );
+  }
+
+  CommunityBloc _bloc;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _bloc = CommunityBloc();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0)), //this right here
+      child: Container(
+        height: 260,
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  'Level Aktifitas',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
+                ),
+              ),
+              SizedBox(
+                height: 8.0,
+              ),
+              Column(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: _icons
+                        .asMap()
+                        .entries
+                        .map(
+                          (MapEntry map) => _buildIcon(map.key),
+                        )
+                        .toList(),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  _buildCaption(_selectedIndex),
+                ],
+              ),
+              FlatButton(
+                  color: AppColor.primaryColor,
+                  textColor: Colors.white,
+                  disabledColor: Colors.grey,
+                  disabledTextColor: Colors.black,
+                  padding: EdgeInsets.fromLTRB(24.0, 8.0, 24.0, 8.0),
+                  splashColor: Colors.blueAccent,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(30.0)),
+                  onPressed: () {
+                    /*...*/
+                    // Center(child: CircularProgressIndicator());
+
+                    _bloc.setProfil(4, _selectedIndex.toString());
+                    _bloc.getProfile();
+                    Navigator.of(context).pop();
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Simpan",
+                            style: TextStyle(fontSize: 14.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
+            ],
+          ),
+        ),
       ),
     );
   }
