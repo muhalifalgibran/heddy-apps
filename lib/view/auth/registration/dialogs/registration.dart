@@ -517,7 +517,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Future navigateToPage(BuildContext context) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setInt('isComplete', 1);
-    return Navigator.of(context).pushNamed('/home');
+    return Navigator.of(context).pushReplacementNamed('/home');
   }
 
   Widget background() {

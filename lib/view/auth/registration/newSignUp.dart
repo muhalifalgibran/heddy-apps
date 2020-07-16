@@ -7,6 +7,7 @@ import 'package:fit_app/network/Response.dart';
 import 'package:fit_app/view/auth/newSignUpBloc.dart';
 import 'package:fit_app/view/auth/signIn.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
+import 'package:fit_app/view/profile/new_home_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:native_color/native_color.dart';
@@ -25,10 +26,11 @@ class _NewSignUpState extends State<NewSignUp> {
   final password = TextEditingController();
   final repeatPassword = TextEditingController();
 
+  //dari home ke beranda
   void loginState(bool loggedIn) {
     if (loggedIn) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()),
+        MaterialPageRoute(builder: (BuildContext context) => NewHomeScreen()),
         ModalRoute.withName('/homeScreen'),
       );
     } else {}

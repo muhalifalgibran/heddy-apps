@@ -105,18 +105,18 @@ class _CommunityScreenState extends State<CommunityScreen> {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 actions: <Widget>[
-                  Icon(Icons.share),
-                  PopupMenuButton<String>(
-                    onSelected: choiceAction,
-                    itemBuilder: (BuildContext context) {
-                      return MenuLogout.pilihan.map((String e) {
-                        return PopupMenuItem<String>(
-                          value: e,
-                          child: Text(e),
-                        );
-                      }).toList();
-                    },
-                  )
+                  // Icon(Icons.share),
+                  // PopupMenuButton<String>(
+                  //   onSelected: choiceAction,
+                  //   itemBuilder: (BuildContext context) {
+                  //     return MenuLogout.pilihan.map((String e) {
+                  //       return PopupMenuItem<String>(
+                  //         value: e,
+                  //         child: Text(e),
+                  //       );
+                  //     }).toList();
+                  //   },
+                  // )
                 ],
               ),
             ),
@@ -626,7 +626,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
                         onPressed: () {
                           /*...*/
                           // Center(child: CircularProgressIndicator());
-                          var sleep = _timeSleep + "-" + _timeWakeUp;
+                          var sleep = _timeWakeUp + "-" + _timeSleep;
                           print(_timeWakeUp + " sd " + _timeSleep);
                           _bloc.setProfil(1, sleep);
                           _bloc.getProfile();

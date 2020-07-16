@@ -25,26 +25,26 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class NewHomeScreenFragment implements BaseHomeFragment {
-  NewHomeScreenFragment(this.position);
-  @override
-  BottomNavyBarItem bottomNavyBarItem = BottomNavyBarItem(
-    icon: Icon(LineIcons.home),
-    title: Text('Beranda'),
-    activeColor: Colors.blue,
-    inactiveColor: Colors.white,
-  );
+// class NewHomeScreenFragment implements BaseHomeFragment {
+//   NewHomeScreenFragment(this.position);
+//   @override
+//   BottomNavyBarItem bottomNavyBarItem = BottomNavyBarItem(
+//     icon: Icon(LineIcons.home),
+//     title: Text('Beranda'),
+//     activeColor: Colors.blue,
+//     inactiveColor: Colors.white,
+//   );
 
-  @override
-  int position;
+//   @override
+//   int position;
 
-  @override
-  Widget view = NewHomeScreen();
-  @override
-  void onTabSelected(BuildContext mContext) {
-    BlocProvider.of<HomeScreenBloc>(mContext).add(this);
-  }
-}
+//   @override
+//   Widget view = NewHomeScreen();
+//   @override
+//   void onTabSelected(BuildContext mContext) {
+//     BlocProvider.of<HomeScreenBloc>(mContext).add(this);
+//   }
+// }
 
 class NewHomeScreen extends StatefulWidget {
   @override
@@ -69,10 +69,10 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
       getNama().then((value) {
         email = value.getString('email');
         photoUrl = value.getString('photoUrl');
-        isComplete = value.getInt('isComplete');
-        if (isComplete == 0) {
-          Navigator.of(context).pushNamed('/registration');
-        }
+        // isComplete = value.getInt('isComplete');
+        // if (isComplete == 0) {
+        //   Navigator.of(context).pushNamed('/registration');
+        // }
       });
     });
     _bloc.getDashboard(currentTime);
@@ -700,11 +700,16 @@ class _NewHomeScreenState extends State<NewHomeScreen> {
               ],
             ),
             Spacer(),
-            Icon(
-              Typicons.pencil,
-              size: 16.0,
-              color: Colors.white,
-            )
+            FlatButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pushNamed("/community");
+                },
+                icon: Icon(
+                  Typicons.pencil,
+                  size: 16.0,
+                  color: Colors.white,
+                ),
+                label: Text(""))
           ],
         ),
         SizedBox(

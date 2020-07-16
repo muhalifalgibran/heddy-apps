@@ -11,6 +11,7 @@ import 'package:fit_app/view/auth/registration/dialogs/registration.dart';
 import 'package:fit_app/view/auth/registration/newSignUp.dart';
 import 'package:fit_app/view/auth/registration/signUp.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
+import 'package:fit_app/view/profile/new_home_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
@@ -32,8 +33,8 @@ class _SignInState extends State<SignIn> {
   void loginState(bool loggedIn) {
     if (loggedIn) {
       Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen()),
-        ModalRoute.withName('/homeScreen'),
+        MaterialPageRoute(builder: (BuildContext context) => NewHomeScreen()),
+        ModalRoute.withName('/home'),
       );
     } else {}
   }

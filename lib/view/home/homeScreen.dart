@@ -17,10 +17,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<BaseHomeFragment> fragments = <BaseHomeFragment>[
-    NewHomeScreenFragment(0),
-    BodyCheckFragment(1),
-    SportTrackerFragment(2),
-    CommunityFragment(3)
+    // NewHomeScreenFragment(0),
+    // BodyCheckFragment(1),
+    // SportTrackerFragment(2),
+    CommunityFragment(1)
   ];
 
   @override

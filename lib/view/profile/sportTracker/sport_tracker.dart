@@ -56,7 +56,7 @@ class _SportTrackerScreenState extends State<SportTrackerScreen> {
                     onPressed: () {
                       /*...*/
                       // Center(child: CircularProgressIndicator());
-                      _bloc.postSport(_select, _timeSleep, _timeWakeUp);
+                      _bloc.postSport(_select, _timeWakeUp, _timeSleep);
                     },
                     child: Row(
                       children: <Widget>[
@@ -241,7 +241,7 @@ class _SportTrackerScreenState extends State<SportTrackerScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        hourMinute15Interval(),
+                        hourMinute15IntervalWake(),
                       ],
                     ),
                   ),
@@ -253,7 +253,7 @@ class _SportTrackerScreenState extends State<SportTrackerScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
-                        hourMinute15IntervalWake(),
+                        hourMinute15Interval(),
                       ],
                     ),
                   ),
@@ -412,6 +412,9 @@ class _SportTrackerScreenState extends State<SportTrackerScreen> {
           elevation: 5.0,
           child: Column(
             children: <Widget>[
+              SizedBox(
+                height: 4.0,
+              ),
               Text(
                 "Berhenti Olahraga",
                 style: TextStyle(
@@ -716,6 +719,9 @@ class _SportTrackerScreenState extends State<SportTrackerScreen> {
           elevation: 5.0,
           child: Column(
             children: <Widget>[
+              SizedBox(
+                height: 4.0,
+              ),
               Text(
                 "Mulai Olahraga",
                 style: TextStyle(

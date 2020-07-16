@@ -2,6 +2,7 @@ import 'package:fit_app/models/food_history.dart';
 import 'package:fit_app/view/auth/registration/dialogs/registration.dart';
 import 'package:fit_app/view/auth/signIn.dart';
 import 'package:fit_app/view/auth/splashScreen.dart';
+import 'package:fit_app/view/community/communityScreen.dart';
 import 'package:fit_app/view/flashscreen/flashscreen.dart';
 import 'package:fit_app/view/home/homeScreen.dart';
 import 'package:fit_app/view/profile/foodComsumtion/foodHistory/food_history_screen.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
       home: SplashScreen(),
       routes: <String, WidgetBuilder>{
         // Set routes for using the Navigator.
-        '/home': (BuildContext context) => new HomeScreen(),
+        '/home': (BuildContext context) => new NewHomeScreen(),
         '/flash': (BuildContext context) => new FlashScreen(),
         '/login': (BuildContext context) => new SignIn(),
         '/registration': (BuildContext context) => new RegistrationScreen(),
@@ -43,6 +44,7 @@ class MyApp extends StatelessWidget {
         '/food': (BuildContext context) => new FoodConsumtion(),
         '/foodHistory': (BuildContext context) => new FoodHistoryScreen(),
         '/sport': (BuildContext context) => new SportTrackerScreen(),
+        '/community': (BuildContext context) => new CommunityScreen(),
         '/profile': (BuildContext context) => new ProfileScreen(),
       },
     );
